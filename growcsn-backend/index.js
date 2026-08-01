@@ -1,5 +1,6 @@
 /** @format */
 
+const fs = require("fs");
 const path = require("path");
 const express = require("express");
 const http = require("http");
@@ -51,6 +52,18 @@ app.use(
 // Set view engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
+
+// Serve frontend assets when built
+const frontendBuildPath = path.join(__dirname, "../growcsn-frontend/dist");
+const frontendBuildExists = fs.existsSync(frontendBuildPath);
+console.log(`Frontend build path: ${frontendBuildPath} exists=${frontendBuildExists}`);
+if (frontendBuildExists) {
+  app.use(express.static(frontendBuildPath));
+
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(frontendBuildPath, "index.html"));
+  });
+}
 
 // Mount routes
 app.use("/", require("./routes")(io));
