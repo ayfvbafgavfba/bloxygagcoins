@@ -24,7 +24,9 @@ function run(command, args, cwd) {
   }
 }
 
-const needsBackendInstall = !fs.existsSync(path.join(backendDir, "node_modules"));
+const backendNodeModules = path.join(backendDir, "node_modules");
+const dotenvModule = path.join(backendNodeModules, "dotenv");
+const needsBackendInstall = !fs.existsSync(dotenvModule);
 if (needsBackendInstall) {
   console.log("Installing backend dependencies...");
   run(npmCommand, ["ci"], backendDir);
