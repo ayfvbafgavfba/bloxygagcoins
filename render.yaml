@@ -7,7 +7,7 @@ services:
     plan: free
     rootDir: growcsn-backend
     buildCommand: npm ci --include=dev --no-audit --no-fund && npm ci --include=dev --no-audit --no-fund --prefix ../growcsn-frontend && npm run --prefix ../growcsn-frontend build
-    startCommand: npm start
+    startCommand: node index.js
     healthCheckPath: /health
     autoDeploy: true
     envVars:
