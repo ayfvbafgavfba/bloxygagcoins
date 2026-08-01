@@ -1,19 +1,60 @@
 import socketIo from 'socket.io-client';
 
+function normalizeSocketUrl(rawUrl) {
+    if (typeof rawUrl !== 'string' || rawUrl.trim() === '') {
+        return rawUrl;
+    }
+
+    const trimmedUrl = rawUrl.trim();
+
+    if (trimmedUrl.startsWith('wss://') || trimmedUrl.startsWith('ws://')) {
+        if (window?.location?.protocol === 'https:' && trimmedUrl.startsWith('ws://')) {
+            return trimmedUrl.replace(/^ws:/, 'wss:');
+        }
+        return trimmedUrl;
+    }
+
+    if (trimmedUrl.startsWith('https://')) {
+        return trimmedUrl.replace(/^https:/, 'wss:');
+    }
+
+    if (trimmedUrl.startsWith('http://')) {
+        return window?.location?.protocol === 'https:' ? trimmedUrl.replace(/^http:/, 'wss:') : trimmedUrl.replace(/^http:/, 'ws:');
+    }
+
+    return trimmedUrl;
+}
+
+// Resolve socket URL with robust fallbacks:
+let socketUrl = normalizeSocketUrl(process.env.VUE_APP_SOCKET_URL);
+
+// If no env provided, default to same origin (use wss on https)
+if (!socketUrl || socketUrl.trim() === '') {
+    socketUrl = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.location.host;
+} else {
+    // Ensure secure transport when page is HTTPS
+    if (window?.location?.protocol === 'https:' && socketUrl.startsWith('ws://')) {
+        socketUrl = socketUrl.replace(/^ws:/, 'wss:');
+    }
+    // If someone set an http:// env accidentally, convert to wss/ws depending on page
+    if (socketUrl.startsWith('http://') || socketUrl.startsWith('https://')) {
+        socketUrl = socketUrl.replace(/^http:/, 'ws:').replace(/^https:/, 'wss:');
+    }
+}
 const state = {
     socketSendLoading: null,
-    socketGeneral: socketIo(process.env.VUE_APP_SOCKET_URL+'/general', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketCrash: socketIo(process.env.VUE_APP_SOCKET_URL+'/crash', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketRoll: socketIo(process.env.VUE_APP_SOCKET_URL+'/roll', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketBlackjack: socketIo(process.env.VUE_APP_SOCKET_URL+'/blackjack', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketDuels: socketIo(process.env.VUE_APP_SOCKET_URL+'/duels', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketMines: socketIo(process.env.VUE_APP_SOCKET_URL+'/mines', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketTowers: socketIo(process.env.VUE_APP_SOCKET_URL+'/towers', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketUnbox: socketIo(process.env.VUE_APP_SOCKET_URL+'/unbox', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketBattles: socketIo(process.env.VUE_APP_SOCKET_URL+'/battles', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketUpgrader: socketIo(process.env.VUE_APP_SOCKET_URL+'/upgrader', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketCashier: socketIo(process.env.VUE_APP_SOCKET_URL+'/cashier', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
-    socketAdmin: socketIo(process.env.VUE_APP_SOCKET_URL+'/admin', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']})
+    socketGeneral: socketIo(socketUrl + '/general', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketCrash: socketIo(socketUrl + '/crash', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketRoll: socketIo(socketUrl + '/roll', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketBlackjack: socketIo(socketUrl + '/blackjack', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketDuels: socketIo(socketUrl + '/duels', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketMines: socketIo(socketUrl + '/mines', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketTowers: socketIo(socketUrl + '/towers', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketUnbox: socketIo(socketUrl + '/unbox', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketBattles: socketIo(socketUrl + '/battles', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketUpgrader: socketIo(socketUrl + '/upgrader', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketCashier: socketIo(socketUrl + '/cashier', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']}),
+    socketAdmin: socketIo(socketUrl + '/admin', { auth: {}, autoConnect: false, reconnection: true, reconnectionDelay: 5000, transports: ['websocket']})
 }
 
 const getters = {
