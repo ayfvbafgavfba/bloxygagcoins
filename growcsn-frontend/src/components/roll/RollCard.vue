@@ -145,7 +145,8 @@
         },
         methods: {
             rollFormatValue(value) {
-                return parseFloat(Math.floor(value / 10) / 100).toFixed(2).toString();
+                const amount = Number(value) || 0;
+                return amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
             }
             ,
             localImage(src) {

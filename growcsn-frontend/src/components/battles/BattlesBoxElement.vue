@@ -51,7 +51,8 @@
                 'battlesEmptySelected'
             ]),
             battlesFormatValue(value) {
-                return parseFloat(Math.floor(value / 10) / 100).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                const amount = Number(value) || 0;
+                return amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
             },
             battlesAddButton() {
                 this.battlesAddSelected(this.box);
