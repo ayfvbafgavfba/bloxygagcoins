@@ -64,11 +64,7 @@ export default {
 
                 if (image.dataset.remoteFallback !== 'true') {
                     image.dataset.remoteFallback = 'true';
-                    if (current.includes('values.roflips.com')) {
-                        image.src = 'https://growagarden.roflips.com/' + file;
-                    } else {
-                        image.src = 'https://values.roflips.com/' + (file.startsWith('/') ? file.slice(1) : file);
-                    }
+                    image.src = file ? `/${file}` : placeholder;
                     return;
                 }
 
@@ -78,13 +74,15 @@ export default {
         localImage(src) {
             if (!src) return placeholder;
             try {
-                if (/^https?:\/\//i.test(src)) {
-                    return src;
+                const value = String(src).trim();
+                if (!value) return placeholder;
+                if (/^https?:\/\//i.test(value)) {
+                    const file = value.split('/').pop().split('?')[0];
+                    return file ? `/${file}` : placeholder;
                 }
-                const cleaned = src.startsWith('/') ? src.slice(1) : src;
-                return `https://values.roflips.com/${cleaned}`;
+                return value.startsWith('/') ? value : `/${value}`;
             } catch (e) {
-                return src;
+                return placeholder;
             }
         },
         toggleSelect() {

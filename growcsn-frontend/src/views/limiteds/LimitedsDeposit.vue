@@ -39,11 +39,16 @@
                         ? Number(value.variants[0].tokens || 0)
                         : Number(value.variant_tokens?.Normal || 0);
 
-                    const image = value.image_url
-                        ? value.image_url.startsWith('http')
-                            ? value.image_url
-                            : 'https://values.roflips.com' + (value.image_url.startsWith('/') ? '' : '/') + value.image_url
-                        : '';
+                    const image = (() => {
+                        if (!value.image_url) return '';
+                        const raw = String(value.image_url).trim();
+                        if (!raw) return '';
+                        if (/^https?:\/\//i.test(raw)) {
+                            const file = raw.split('/').pop().split('?')[0];
+                            return file ? `/${file}` : '';
+                        }
+                        return raw.startsWith('/') ? raw : `/${raw}`;
+                    })();
 
                     return {
                         uniqueId: value.slug || (value.variants && value.variants.length > 0 ? value.variants[0].id : value.name),
