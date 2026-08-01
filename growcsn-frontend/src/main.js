@@ -12,6 +12,8 @@ Vue.use(VueMeta);
 
 Vue.config.productionTip = false;
 
+console.log('VUE_APP_BACKEND_URL=', process.env.VUE_APP_BACKEND_URL);
+console.log('VUE_APP_SOCKET_URL=', process.env.VUE_APP_SOCKET_URL);
 axios.defaults.baseURL = process.env.VUE_APP_BACKEND_URL;
 
 const token = localStorage.getItem('token');
