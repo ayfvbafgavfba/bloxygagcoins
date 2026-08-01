@@ -15,7 +15,7 @@
                             (
                             <img src="@/assets/img/icons/coin.svg" alt="icon" />
                             <div class="limits-value">
-                                <span>1</span>.00 <span>- 50,000</span>.00
+                                <span>500</span> <span>- 50,000</span>
                             </div>
                             )
                         </div>

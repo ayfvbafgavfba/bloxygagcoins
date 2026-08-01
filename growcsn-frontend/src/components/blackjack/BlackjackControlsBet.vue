@@ -6,11 +6,10 @@
         </div>
         <div class="bet-container">
             <div class="container-amount">
-                <button v-on:click="$parent.blackjackSetChip(0)" class="button-red" v-bind:class="{ 'button-active': blackjackChip === 0 }">{{ table.game.type === 'standard' ? '1' : '50'}}</button>
-                <button v-on:click="$parent.blackjackSetChip(1)" class="button-purple" v-bind:class="{ 'button-active': blackjackChip === 1 }">{{ table.game.type === 'standard' ? '500' : '100'}}</button>
-                <button v-on:click="$parent.blackjackSetChip(2)" class="button-blue" v-bind:class="{ 'button-active': blackjackChip === 2 }">{{ table.game.type === 'standard' ? '1K' : '200'}}</button>
-                <button v-on:click="$parent.blackjackSetChip(3)" class="button-orange" v-bind:class="{ 'button-active': blackjackChip === 3 }">{{ table.game.type === 'standard' ? '5K' : '500'}}</button>
-                <button v-on:click="$parent.blackjackSetChip(4)" class="button-green" v-bind:class="{ 'button-active': blackjackChip === 4 }">{{ table.game.type === 'standard' ? '10K' : ''}}</button>
+                <button v-on:click="$parent.blackjackSetChip(0)" class="button-red" v-bind:class="{ 'button-active': blackjackChip === 0 }">{{ table.game.type === 'standard' ? '500' : '50'}}</button>
+                <button v-on:click="$parent.blackjackSetChip(1)" class="button-purple" v-bind:class="{ 'button-active': blackjackChip === 1 }">{{ table.game.type === 'standard' ? '1K' : '100'}}</button>
+                <button v-on:click="$parent.blackjackSetChip(2)" class="button-blue" v-bind:class="{ 'button-active': blackjackChip === 2 }">{{ table.game.type === 'standard' ? '5K' : '200'}}</button>
+                <button v-on:click="$parent.blackjackSetChip(3)" class="button-orange" v-bind:class="{ 'button-active': blackjackChip === 3 }">{{ table.game.type === 'standard' ? '10K' : '500'}}</button>
             </div>
             <div class="container-buttons">
                 <button v-on:click="blackjackClearButton()" class="button-clear" v-bind:disabled="socketSendLoading !== null">
