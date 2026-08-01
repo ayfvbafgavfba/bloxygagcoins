@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="top-slider">
-                <input v-model="minesAmount" type="range" min="0" v-bind:max="authUser.user !== null ? (authUser.user.balance / 1000) : 0" step="0.01" v-bind:disabled="minesGame !== null && minesGame.state !== 'completed'" />
+                <input v-model="minesAmount" type="range" min="0" v-bind:max="authUser.user !== null ? Math.min(authUser.user.balance / 1000, 2000) : 0" step="0.01" v-bind:disabled="minesGame !== null && minesGame.state !== 'completed'" />
             </div>
             <div class="top-mines">
                 <div class="mines-title">AMOUNT OF MINES</div>
@@ -129,7 +129,7 @@
                 if(action === '2x') {
                     amount = Math.floor(amount * 2);
                 } else if(action === 'max') {
-                    amount = this.authUser.user.balance <= 1000000 ? this.authUser.user.balance : 1000000;
+                    amount = this.authUser.user.balance <= 2000000 ? this.authUser.user.balance : 2000000;
                 }
 
                 this.minesAmount = parseFloat(Math.floor(amount / 10) / 100).toFixed(2);

@@ -157,7 +157,7 @@
                 } else if(action === '10x') {
                     amount = Math.floor(amount * 10);
                 } else if(action === 'max') {
-                    amount = this.authUser.user.balance <= 1000000 ? this.authUser.user.balance : 1000000;
+                    amount = this.authUser.user.balance <= 2000000 ? this.authUser.user.balance : 2000000;
                 }
 
                 this[value] = parseFloat(Math.floor(amount / 10) / 100).toFixed(2);
