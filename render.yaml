@@ -6,7 +6,7 @@ services:
     region: oregon
     plan: free
     rootDir: growcsn-backend
-    buildCommand: npm ci --include=dev --no-audit --no-fund && cd ../growcsn-frontend && npm ci --include=dev --no-audit --no-fund && npm run build && cd ../growcsn-backend
+    buildCommand: npm ci --include=dev --no-audit --no-fund && npm install --include=dev --no-audit --no-fund --prefix ../growcsn-frontend && npm run --prefix ../growcsn-frontend build
     startCommand: npm start
     healthCheckPath: /health
     autoDeploy: true
