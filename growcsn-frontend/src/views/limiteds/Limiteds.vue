@@ -95,8 +95,8 @@
         width: 100%;
         display: flex;
         justify-content: center;
-        padding: 48px 30px 60px;
-        background: linear-gradient(135deg, rgba(3, 25, 41, 0.28), rgba(0, 11, 22, 0));
+        padding: 42px 22px 60px;
+        background: linear-gradient(180deg, rgba(3, 18, 30, 0.6) 0%, rgba(1, 9, 18, 0.2) 100%);
     }
 
     .limiteds .limiteds-items {
@@ -110,8 +110,12 @@
         grid-template-columns: 280px minmax(220px, auto) 409px;
         align-items: center;
         gap: 24px;
-        padding: 0 0 25px;
-        border-bottom: 1px solid rgba(54, 133, 170, 0.28);
+        padding: 22px 20px 18px;
+        border-radius: 16px 16px 0 0;
+        background: linear-gradient(180deg, rgba(10, 36, 49, 0.84) 0%, rgba(7, 24, 35, 0.7) 100%);
+        border: 1px solid rgba(88, 200, 255, 0.15);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 25px rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur(8px);
     }
 
     .limiteds .header-title,
@@ -126,8 +130,9 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 4px;
+        gap: 6px;
         line-height: 1;
+        padding-left: 4px;
     }
 
     .limiteds .header-kicker {
@@ -139,17 +144,22 @@
     }
 
     .limiteds .header-title strong {
-        color: #f2fbff;
-        font-size: 21px;
+        color: #ebfbff;
+        font-size: 22px;
         font-weight: 900;
-        letter-spacing: 0.2px;
+        letter-spacing: 0.22px;
+        text-transform: uppercase;
+        text-shadow: 0 0 26px rgba(62, 201, 255, 0.18);
     }
 
     .limiteds .header-subtitle {
-        color: #7398b3;
+        color: #8ab6d3;
         font-family: 'Open Sans', sans-serif;
-        font-size: 11px;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.9px;
+        text-transform: uppercase;
+        opacity: 0.9;
     }
 
     .limiteds .header-mid {
@@ -165,8 +175,13 @@
         width: 100%;
         height: 630px;
         min-height: 600px;
-        margin-top: 17px;
-        overflow-x: scroll;
+        margin-top: 18px;
+        padding: 8px 0 0;
+        overflow-x: auto;
+        border-radius: 0 0 16px 16px;
+        background: linear-gradient(180deg, rgba(8, 22, 31, 0.35), rgba(7, 18, 28, 0.12));
+        border: 1px solid rgba(88, 200, 255, 0.08);
+        border-top: none;
     }
 
     .limiteds .slide-fade-enter-active {

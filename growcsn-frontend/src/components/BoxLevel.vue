@@ -13,97 +13,98 @@
 
 <style scoped>
     .box-level {
-        width: 38px;
-        height: 28px;
+        width: 42px;
+        height: 30px;
         position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         margin-left: 12px;
+        filter: drop-shadow(0 0 8px rgba(94, 214, 255, 0.18));
     }
 
     .box-level::before {
         content: '';
-        width: 100%;
-        height: 100%;
         position: absolute;
-        top: 0;
-        left: 0;
-        background: linear-gradient(180deg, rgba(6, 36, 61, 0) 0%, #9e9e9e 100%);
-        clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 25%, 100% 75%, calc(100% - 5px) 100%, 5px 100%, 0 75%, 0 25%);
+        inset: 0;
+        background: linear-gradient(180deg, rgba(124, 150, 174, 0.9) 0%, rgba(90, 105, 120, 0.95) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 25%, 100% 75%, calc(100% - 8px) 100%, 8px 100%, 0 75%, 0 25%);
+        box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.08), 0 0 18px rgba(115, 220, 255, 0.1);
     }
 
     .box-level.level-blue::before {
-        background: linear-gradient(180deg, rgba(6, 36, 61, 0) 0%, #559ee4 100%);
+        background: linear-gradient(180deg, rgba(85, 158, 228, 0.9) 0%, rgba(41, 96, 161, 0.96) 100%);
+        box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.1), 0 0 18px rgba(85, 158, 228, 0.28);
     }
 
     .box-level.level-green::before {
-        background: linear-gradient(180deg, rgba(6, 36, 61, 0) 0%, #b8e92d 100%);
+        background: linear-gradient(180deg, rgba(184, 233, 45, 0.9) 0%, rgba(112, 154, 21, 0.96) 100%);
+        box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.1), 0 0 18px rgba(184, 233, 45, 0.3);
     }
 
     .box-level.level-orange::before {
-        background: linear-gradient(180deg, rgba(6, 36, 61, 0) 0%, #fca311 100%);
+        background: linear-gradient(180deg, rgba(252, 163, 17, 0.9) 0%, rgba(177, 99, 11, 0.96) 100%);
+        box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.1), 0 0 18px rgba(252, 163, 17, 0.28);
     }
 
     .box-level.level-red::before {
-        background: linear-gradient(180deg, rgba(6, 36, 61, 0) 0%, #ff4e4e 100%);
+        background: linear-gradient(180deg, rgba(255, 78, 78, 0.9) 0%, rgba(153, 34, 34, 0.96) 100%);
+        box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.1), 0 0 18px rgba(255, 78, 78, 0.3);
     }
 
     .box-level.level-purple::before {
-        background: linear-gradient(180deg, rgba(6, 36, 61, 0) 0%, #6953f1 100%);
+        background: linear-gradient(180deg, rgba(105, 83, 241, 0.9) 0%, rgba(71, 46, 179, 0.96) 100%);
+        box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.1), 0 0 18px rgba(105, 83, 241, 0.3);
     }
 
     .box-level::after {
         content: '';
-        width: calc(100% - 2px);
-        height: calc(100% - 2px);
         position: absolute;
-        top: 1px;
-        left: 1px;
-        background: #063141;
-        clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 25%, 100% 75%, calc(100% - 5px) 100%, 5px 100%, 0 75%, 0 25%);
+        inset: 2px;
+        background: rgba(5, 22, 33, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 25%, 100% 75%, calc(100% - 7px) 100%, 7px 100%, 0 75%, 0 25%);
     }
 
     .chat-message-element .box-level::after {
-        background-color: #052139;
+        background-color: rgba(5, 18, 27, 0.96);
     }
 
     .box-level .level-inner {
-        width: calc(100% - 2px);
-        height: calc(100% - 2px);
-        position: absolute;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        top: 1px;
-        left: 1px;
-        font-size: 12px;
-        font-weight: 700;
-        color: #9e9e9e;
-        background: rgba(158, 158, 158, 0.05);
-        clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 25%, 100% 75%, calc(100% - 5px) 100%, 5px 100%, 0 75%, 0 25%);
+        position: relative;
         z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: calc(100% - 8px);
+        height: calc(100% - 6px);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        color: rgba(255, 255, 255, 0.96);
+        text-shadow: 0 0 10px currentColor;
+        clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 25%, 100% 75%, calc(100% - 7px) 100%, 7px 100%, 0 75%, 0 25%);
+        background: rgba(255, 255, 255, 0.02);
     }
 
     .box-level.level-blue .level-inner {
-        color: #559ee4;
-        background: rgba(85, 158, 228, 0.05);
+        color: #8ec6ff;
     }
 
     .box-level.level-green .level-inner {
-        color: #b8e92d;
-        background: rgba(184, 233, 45, 0.05);
+        color: #d9ff6f;
     }
 
     .box-level.level-orange .level-inner {
-        color: #fca311;
-        background: rgba(252, 163, 17, 0.05);
+        color: #ffca66;
     }
 
     .box-level.level-red .level-inner {
-        color: #ff4e4e;
-        background: rgba(255, 78, 78, 0.05);
+        color: #ff8a8a;
     }
 
     .box-level.level-purple .level-inner {
-        color: #6953f1;
-        background: rgba(105, 83, 241, 0.05);
+        color: #b8a8ff;
     }
 </style>
