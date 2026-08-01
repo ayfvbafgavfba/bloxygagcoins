@@ -53,6 +53,10 @@ app.use(
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
 
+// Mount routes
+app.use("/", require("./routes")(io));
+app.use("/public", express.static(path.join(__dirname, "public")));
+
 // Serve frontend assets when built
 const frontendBuildPath = path.join(__dirname, "../growcsn-frontend/dist");
 const frontendBuildExists = fs.existsSync(frontendBuildPath);
@@ -64,10 +68,6 @@ if (frontendBuildExists) {
     res.sendFile(path.join(frontendBuildPath, "index.html"));
   });
 }
-
-// Mount routes
-app.use("/", require("./routes")(io));
-app.use("/public", express.static(path.join(__dirname, "public")));
 
 // Mount sockets
 require("./sockets")(io);
