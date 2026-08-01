@@ -82,7 +82,7 @@
                 return this.table.players[this.table.players.findIndex((element) => element.seat === seat)];
             },
             blackjackGetAmount(chip) {
-                const amounts = this.table.game.type === 'standard' ? [0.1, 1, 10, 100] : [50, 100, 200, 500];
+                const amounts = this.table.game.type === 'standard' ? [1, 500, 1000, 5000, 10000] : [50, 100, 200, 500];
                 return amounts[chip];
             },
             blackjackGetCardValue(cards) {
