@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoFlips — Item Values</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #141418;
+      --border: #222228;
+      --text: #f0f0f2;
+      --muted: #7a7a8a;
+      --accent: #7c5cfc;
+      --accent2: #a78bfa;
+      --green: #22c55e;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--accent2); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 500;
+    }
+
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .page-sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    input[type="search"] {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input[type="search"]:focus { border-color: var(--accent); }
+    input[type="search"]::placeholder { color: var(--muted); }
+
+    .filter-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .filter-btn {
+      padding: 8px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .sort-select {
+      padding: 8px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      transition: border-color 0.15s, transform 0.1s;
+      cursor: default;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .card-img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .card-img-placeholder {
+      width: 72px;
+      height: 72px;
+      background: var(--border);
+      border-radius: 8px;
+    }
+
+    .card-name {
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .card-rarity {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .rarity-legendary { color: #f59e0b; }
+    .rarity-secret { color: #ec4899; }
+    .rarity-mythic { color: #a855f7; }
+    .rarity-divine { color: #22d3ee; }
+    .rarity-rare { color: #3b82f6; }
+    .rarity-uncommon { color: #10b981; }
+    .rarity-common { color: var(--muted); }
+
+    .count-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px;
+      color: var(--muted);
+      font-size: 15px;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty {
+      text-align: center;
+      padding: 80px;
+      color: var(--muted);
+    }
+
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    footer a { color: var(--accent2); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      header { padding: 14px 16px; }
+      .main { padding: 20px 16px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+      .filter-btns { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="https://growagarden.roflips.com">Ro<span>Flips</span></a>
+  <div class="header-right">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Live Values
+    </div>
+    <a href="https://growagarden.roflips.com" style="font-size:13px;color:var(--muted);text-decoration:none;">Play →</a>
+  </div>
+</header>
+
+<div class="main">
+  <div class="page-title">Item Values</div>
+  <div class="page-sub">Live prices for all Grow a Garden items on RoFlips</div>
+
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="search" id="search" placeholder="Search items…" autocomplete="off" />
+    </div>
+    <div class="filter-btns">
+      <button class="filter-btn active" data-rarity="">All</button>
+      <button class="filter-btn" data-rarity="Secret">Secret</button>
+      <button class="filter-btn" data-rarity="Mythic">Mythic</button>
+      <button class="filter-btn" data-rarity="Legendary">Legendary</button>
+      <button class="filter-btn" data-rarity="Rare">Rare</button>
+    </div>
+    <select class="sort-select" id="sort">
+      <option value="value-desc">Highest Value</option>
+      <option value="value-asc">Lowest Value</option>
+      <option value="name-asc">A → Z</option>
+    </select>
+  </div>
+
+  <div id="count" class="count-label"></div>
+  <div id="content"></div>
+</div>
+
+<footer>
+  Values update live from <a href="https://growagarden.roflips.com">growagarden.roflips.com</a>
+</footer>
+
+<script>
+  let allItems = []
+  let activeRarity = ''
+  let sortMode = 'value-desc'
+  let searchQ = ''
+
+  function fmt(n) {
+    n = Number(n) || 0
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'
+    if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'
+    return n.toLocaleString()
+  }
+
+  function rarityClass(r) {
+    if (!r) return ''
+    const map = { secret: 'rarity-secret', mythic: 'rarity-mythic', legendary: 'rarity-legendary',
+      divine: 'rarity-divine', rare: 'rarity-rare', uncommon: 'rarity-uncommon', common: 'rarity-common' }
+    return map[r.toLowerCase()] || ''
+  }
+
+  function render() {
+    let items = allItems.filter(it => {
+      if (activeRarity && (it.rarity || '').toLowerCase() !== activeRarity.toLowerCase()) return false
+      if (searchQ && !it.name.toLowerCase().includes(searchQ)) return false
+      return true
+    })
+
+    if (sortMode === 'value-desc') items.sort((a, b) => Number(b.value_amount) - Number(a.value_amount))
+    else if (sortMode === 'value-asc') items.sort((a, b) => Number(a.value_amount) - Number(b.value_amount))
+    else items.sort((a, b) => a.name.localeCompare(b.name))
+
+    document.getElementById('count').textContent = `${items.length} item${items.length !== 1 ? 's' : ''}`
+
+    if (items.length === 0) {
+      document.getElementById('content').innerHTML = '<div class="empty">No items found</div>'
+      return
+    }
+
+    const html = items.map(it => {
+      const imgSrc = it.image_url ? `https://growagarden.roflips.com${it.image_url}` : null
+      const img = imgSrc
+        ? `<img class="card-img" src="${imgSrc}" alt="${it.name}" loading="lazy" onerror="this.style.display='none'">`
+        : `<div class="card-img-placeholder"></div>`
+      return `
+        <div class="card">
+          ${img}
+          <div class="card-name">${it.name}</div>
+          <div class="card-rarity ${rarityClass(it.rarity)}">${it.rarity || ''}</div>
+          <div class="card-value">${fmt(it.value_amount)}</div>
+        </div>`
+    }).join('')
+
+    document.getElementById('content').innerHTML = `<div class="grid">${html}</div>`
+  }
+
+  async function load() {
+    document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div>Loading values…</div>'
+    try {
+      const res = await fetch('https://growagardenflips.vercel.app/auth-api/pets?platform=growagarden')
+      const data = await res.json()
+      const raw = Array.isArray(data) ? data : (data.items || data.pets || [])
+      // Normalize: extract value from variant_tokens.Normal if value_amount not present
+      allItems = raw.map(it => ({
+        ...it,
+        value_amount: it.value_amount ?? it.variant_tokens?.Normal ?? 0
+      }))
+      render()
+    } catch (e) {
+      document.getElementById('content').innerHTML = '<div class="empty">Failed to load — try refreshing</div>'
+    }
+  }
+
+  document.getElementById('search').addEventListener('input', e => {
+    searchQ = e.target.value.toLowerCase().trim()
+    render()
+  })
+
+  document.getElementById('sort').addEventListener('change', e => {
+    sortMode = e.target.value
+    render()
+  })
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      activeRarity = btn.dataset.rarity
+      render()
+    })
+  })
+
+  load()
+  setInterval(load, 60000) // refresh every minute
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"145767f9a983451f940b7f2c498e4dd3"}' crossorigin="anonymous"></script>
+</body>
+</html>

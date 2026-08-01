@@ -1,0 +1,420 @@
+﻿.ModalBackground {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 105;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  > .Profile {
+    max-width: 520px;
+    width: 100%;
+    max-height: 90vh;
+    min-height: 420px;
+    background: #1f1733;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    box-sizing: border-box;
+    margin: 10px;
+    > .Header {
+      background: #151223;
+      width: 100%;
+      min-height: 150px;
+      border: 5px solid #20183680;
+      border-bottom: none;
+      border-radius: 15px 15px 0px 0px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 20px;
+      background-image: url("../../assets/images/homeBackground.svg");
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: soft-light;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      position: relative;
+      > .Profile {
+        display: flex;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        > img {
+          border-radius: 96px;
+          background: linear-gradient(
+            180deg,
+            rgba(21, 16, 39, 0) 0%,
+            rgba(134, 58, 255, 0.5) 100%,
+            rgba(134, 58, 255, 0.5) 100%
+          );
+          border: 2px #863aff solid;
+          box-shadow: 0px 0px 40px 0px #863aff26;
+        }
+        > .Info {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          width: 164px;
+          gap: 5px;
+          .Heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+            width: 100%;
+            > p {
+              color: white;
+              font-size: 16px;
+              font-weight: 600;
+              line-height: 24px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              width: 73%;
+            }
+            .Level {
+              background: linear-gradient(#863aff, #a14cff) padding-box,
+                linear-gradient(to bottom, #b463ff, #863aff) border-box;
+              border: 1px solid transparent;
+              width: 37px;
+              height: 24px;
+              border-radius: 5px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              p {
+                font-size: 8px;
+                font-weight: 600;
+                line-height: 12px;
+                color: white;
+              }
+            }
+          }
+          > .Stats {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: start;
+            gap: 5px;
+            .XP {
+              color: #919191;
+              font-size: 10px;
+              font-weight: 500;
+              span {
+                color: white;
+                font-weight: 500;
+                font-size: 10px;
+              }
+            }
+            input {
+              -webkit-appearance: none;
+              appearance: none;
+              width: 100%;
+              height: 6px;
+              background: #211936;
+              outline: none;
+              position: relative;
+              border-radius: 2px;
+            }
+            input::-webkit-slider-thumb {
+              -webkit-appearance: none;
+              appearance: none;
+            }
+            .JoinDate {
+              color: #919191;
+              font-weight: 500;
+              font-size: 7px;
+              span {
+                color: white;
+              }
+            }
+          }
+        }
+      }
+      .Navigation {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        cursor: pointer;
+        align-self: start;
+        right: 20px;
+        p {
+          font-size: 9px;
+          color: white;
+          font-weight: 500;
+          text-wrap: nowrap;
+        }
+        img {
+          width: 6px;
+          height: auto;
+        }
+      }
+    }
+    > .Content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      box-sizing: border-box;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      > .Container {
+        width: 100%;
+        min-height: 100%;
+        max-height: calc(100vh - 190px);
+        background: #151223;
+        box-shadow: 0px 7px 39.599998474121094px -1px #0000001a inset;
+        border-radius: 0px 0px 15px 15px;
+        padding: 15px 10px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: 1 1 auto;
+        min-height: 0;
+        .Actions {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          .Header {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            p {
+              font-size: 10px;
+              font-weight: 500;
+              line-height: 15px;
+              color: #fff;
+              opacity: 50%;
+            }
+          }
+          .Tip {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: linear-gradient(180deg, #863aff 0%, #8b3cff 100%)
+                padding-box,
+              linear-gradient(to bottom, #a14cff, #863aff) border-box;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            height: 30px;
+            p {
+              color: white;
+              font-size: 10px;
+              font-weight: 600;
+            }
+            img {
+              width: 8px;
+              height: 8px;
+            }
+          }
+          .TipPet {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-height: 360px;
+            min-height: 0;
+            overflow: hidden;
+          }
+          .InventoryGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+            gap: 10px;
+            margin-bottom: 6px;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding-right: 6px;
+            padding-bottom: 8px;
+          }
+          .SendTipButton {
+            position: sticky;
+            bottom: 0;
+            z-index: 1;
+          }
+          .InventoryItem {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 14px;
+            min-height: 150px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #19172c 0%, #1e1a39 100%) padding-box,
+              linear-gradient(to bottom, #322e58, #1e1a39) border-box;
+            border: 1px solid rgba(134, 58, 255, 0.2);
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+          }
+          .InventoryItem:hover {
+            transform: translateY(-2px);
+          }
+          .InventoryItem.Selected {
+            background: linear-gradient(180deg, #1d1141 0%, #2f1a5a 100%) padding-box,
+              linear-gradient(to bottom, #863aff, #5329a3) border-box;
+            border-color: #863aff;
+          }
+          .InventoryItem img {
+            width: 56px;
+            height: 56px;
+            object-fit: contain;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+          }
+          .InventoryItem .Info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 100%;
+          }
+          .InventoryItem .Info p {
+            color: white;
+            font-size: 10px;
+            text-align: center;
+            line-height: 13px;
+            overflow-wrap: break-word;
+            max-height: 36px;
+          }
+          .InventoryItem .Info .Value {
+            color: #863aff;
+            font-weight: 600;
+            font-size: 12px;
+          }
+          .TipHeader {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+          }
+          .TipHeader p {
+            color: #c8c8ff;
+            font-size: 11px;
+            margin: 0;
+          }
+          .TipHeader .TipSubtext {
+            color: #8c80c5;
+            font-size: 10px;
+          }
+          .SendTipButton {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(180deg, #863aff 0%, #8b3cff 100%) padding-box,
+              linear-gradient(to bottom, #a14cff, #863aff) border-box;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            height: 38px;
+            margin-top: auto;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+          }
+          .SendTipButton:hover:not(.Disabled) {
+            transform: scale(0.98);
+          }
+          .SendTipButton.Disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+          .SendTipButton p {
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            margin: 0;
+          }
+        }
+        .Statistics {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+          > .Header {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            p {
+              font-size: 10px;
+              font-weight: 500;
+              line-height: 15px;
+              color: #fff;
+              opacity: 50%;
+            }
+            img {
+              height: 11px;
+              width: 11px;
+              opacity: 50%;
+            }
+          }
+          .Boxes {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 5px;
+            .Box {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-direction: column;
+              border: 1px solid transparent;
+              border-radius: 5px;
+              height: 59px;
+              background: linear-gradient(180deg, #19182d 0%, #1e1733 100%)
+                  padding-box,
+                linear-gradient(to bottom, #32305a, #3c2d65) border-box;
+              .Header {
+                display: flex;
+                gap: 5px;
+                align-items: center;
+                justify-content: center;
+                p {
+                  background-blend-mode: overlay;
+                  background: linear-gradient(#a14cff, #863aff);
+                  -webkit-background-clip: text;
+                  -webkit-text-fill-color: transparent;
+                  text-wrap: nowrap;
+                  font-size: 10px;
+                  font-weight: 600;
+                }
+              }
+              > P {
+                color: white;
+                font-size: 9px;
+                font-weight: 600;
+                line-height: 15px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 490px) {
+  .Profile {
+    > .Navigation {
+      position: absolute;
+      top: 12px;
+      right: 10px !important;
+    }
+    > .Header {
+      .Profile {
+        justify-content: center !important;
+      }
+    }
+  }
+}

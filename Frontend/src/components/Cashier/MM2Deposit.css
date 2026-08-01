@@ -1,0 +1,257 @@
+﻿.ModalBackground {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 104;
+  .loadingContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 105;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .loading {
+      width: 50px;
+      height: 50px;
+      border: 6px solid rgb(21, 18, 35);
+      border-radius: 50%;
+      border-top: 6px solid #863aff;
+      animation: spin 0.5s linear infinite;
+    }
+  }
+  .MM2Modal {
+    width: 501px;
+    height: 554px;
+    background: #1f1834;
+    border-radius: 15px;
+    animation: forwards 0.3s modalPopup;
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+    .Nav {
+      background: #151027;
+      border: 5px solid #20183680;
+      border-bottom: none;
+      border-radius: 15px 15px 0px 0px;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0px 13px;
+      .Title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        img {
+          height: 34px;
+          width: 34px;
+        }
+        p {
+          font-size: 16px;
+          font-weight: 600;
+          background: linear-gradient(#a14cff, #863aff);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      }
+      .Navigate {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        cursor: pointer;
+        p {
+          font-size: 10px;
+          color: white;
+          font-weight: 500;
+        }
+        img {
+          width: 6px;
+          height: auto;
+        }
+      }
+    }
+    .Content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      padding: 12px 24px;
+      box-sizing: border-box;
+      overflow: hidden;
+      .Instructions {
+        width: 100%;
+        background: #151223;
+        border: 1px solid rgba(134, 58, 255, 0.18);
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin-bottom: 12px;
+        h3 {
+          margin: 0 0 8px;
+          font-size: 16px;
+          font-weight: 700;
+          color: #ffffff;
+        }
+        p {
+          margin: 0;
+          font-size: 12px;
+          line-height: 1.5;
+          color: #c0b7d9;
+        }
+        .Hint {
+          margin-top: 8px;
+          color: #a88bff;
+        }
+      }
+      .BotsContainer {
+        padding: 15px 10px;
+        flex: auto;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #151223;
+        border-radius: 5px 5px 15px 15px;
+        overflow: hidden;
+        .Bots {
+          background: #151223;
+          height: 100%;
+          width: 100%;
+          display: flex;
+          padding: 0px 5px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+          gap: 15px;
+          .EmptyState {
+            width: 100%;
+            padding: 22px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            text-align: center;
+            p {
+              margin: 0;
+              color: #c0b7d9;
+              font-size: 13px;
+            }
+            p + p {
+              margin-top: 6px;
+              color: #8f7fd3;
+            }
+          }
+          .Bot {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            background: linear-gradient(180deg, #19182c 0%, #2e214f 100%) padding-box,
+              linear-gradient(to bottom, #323058, #5b419d) border-box;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 20px 15px;
+            flex-direction: column;
+            .Info {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+              gap: 10px;
+              img {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                border: 1px solid #863aff;
+                object-fit: cover;
+              }
+              .Meta {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                .Name {
+                  color: white;
+                  font-size: 15px;
+                  font-weight: 600;
+                  margin: 0;
+                }
+                .Actions {
+                  display: flex;
+                  gap: 8px;
+                }
+                .CopyButton {
+                  border: 1px solid rgba(134, 58, 255, 0.4);
+                  background: rgba(134, 58, 255, 0.12);
+                  color: #ffffff;
+                  border-radius: 8px;
+                  padding: 8px 12px;
+                  font-size: 12px;
+                  cursor: pointer;
+                  transition: transform 0.15s ease, background 0.15s ease;
+                }
+                .CopyButton:hover {
+                  transform: translateY(-1px);
+                  background: rgba(134, 58, 255, 0.2);
+                }
+              }
+              .Online,
+              .Offline {
+                width: 16px;
+                height: 16px;
+                border-radius: 999px;
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+              }
+              .Online {
+                background: #3aff4e;
+                box-shadow: 0 0 10px rgba(58, 255, 78, 0.25);
+              }
+              .Offline {
+                background: #ff4f7d;
+                box-shadow: 0 0 10px rgba(255, 79, 125, 0.25);
+              }
+              .Online > .Online,
+              .Offline > .Offline {
+                width: 10px;
+                height: 10px;
+              }
+            }
+            .BotHint {
+              margin-top: 14px;
+              p {
+                margin: 0;
+                color: #c0b7d9;
+                font-size: 12px;
+                line-height: 1.5;
+              }
+              strong {
+                color: #ffffff;
+              }
+            }
+          }
+        }
+        .Bots::-webkit-scrollbar {
+          width: 6px;
+          background: #19172c;
+        }
+        .Bots::-webkit-scrollbar-thumb {
+          background: rgba(134, 58, 255, 0.3);
+          border-radius: 10px;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 470px) {
+  .Bot > .Info > .Pfp {
+    display: none !important;
+  }
+}
+

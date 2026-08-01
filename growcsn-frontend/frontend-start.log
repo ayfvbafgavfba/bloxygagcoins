@@ -1,0 +1,156 @@
+
+> growcsn-frontend@0.1.0 serve
+> vue-cli-service serve
+
+ INFO  Starting development server...
+ DONE  Compiled successfully in 18996ms7:14:07 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+
+  Note that the development build is not optimized.
+  To create a production build, run npm run build.
+
+ WAIT  Compiling...9:31:05 PM
+
+ DONE  Compiled successfully in 3163ms9:31:09 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+
+ WAIT  Compiling...9:31:15 PM
+
+ DONE  Compiled successfully in 661ms9:31:16 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+
+ WAIT  Compiling...9:31:22 PM
+
+ DONE  Compiled successfully in 766ms9:31:23 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+
+ WAIT  Compiling...9:31:27 PM
+
+ DONE  Compiled successfully in 511ms9:31:28 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+
+ WAIT  Compiling...9:40:41 PM
+
+ DONE  Compiled successfully in 2125ms9:40:44 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+
+ WAIT  Compiling...10:09:32 PM
+
+ ERROR  Failed to compile with 1 error10:09:36 PM
+
+ error  in ./src/components/cashier/PetValueItem.vue?vue&type=template&id=747da941&scoped=true
+
+Module Error (from ./node_modules/vue-loader/lib/loaders/templateLoader.js):
+(Emitted value instead of an instance of Error) 
+
+  Errors compiling template:
+
+  alt="{{ item.name }}": Interpolation inside attributes has been removed. Use v-bind or the colon shorthand instead. For example, instead of <div id="{{ val }}">, use <div :id="val">.
+
+  3  |      <div class="pet-value-inner">
+  4  |          <div class="pet-value-image">
+  5  |              <img v-if="item.image" :src="item.image" alt="{{ item.name }}" />
+     |                                                       ^^^^^^^^^^^^^^^^^^^^^
+  6  |              <div v-else class="pet-value-image-placeholder"></div>
+  7  |          </div>
+
+
+ @ ./src/components/cashier/PetValueItem.vue?vue&type=template&id=747da941&scoped=true 1:0-534 1:0-534
+ @ ./src/components/cashier/PetValueItem.vue
+ @ ./node_modules/cache-loader/dist/cjs.js??ref--13-0!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--1-0!./node_modules/vue-loader/lib??vue-loader-options!./src/views/limiteds/LimitedsDeposit.vue?vue&type=script&lang=js
+ @ ./src/views/limiteds/LimitedsDeposit.vue?vue&type=script&lang=js
+ @ ./src/views/limiteds/LimitedsDeposit.vue
+ @ ./src/router/index.js
+ @ ./src/main.js
+ @ multi (webpack)-dev-server/client?http://10.8.86.5:8080&sockPath=/sockjs-node (webpack)/hot/dev-server.js ./src/main.js
+
+ WAIT  Compiling...10:09:53 PM
+
+ ERROR  Failed to compile with 1 error10:09:54 PM
+
+ error  in ./src/components/cashier/PetValueItem.vue?vue&type=template&id=747da941&scoped=true
+
+Module Error (from ./node_modules/vue-loader/lib/loaders/templateLoader.js):
+(Emitted value instead of an instance of Error) 
+
+  Errors compiling template:
+
+  alt="{{ item.name }}": Interpolation inside attributes has been removed. Use v-bind or the colon shorthand instead. For example, instead of <div id="{{ val }}">, use <div :id="val">.
+
+  3  |      <div class="pet-value-inner">
+  4  |          <div class="pet-value-image">
+  5  |              <img v-if="item.image" :src="item.image" alt="{{ item.name }}" />
+     |                                                       ^^^^^^^^^^^^^^^^^^^^^
+  6  |              <div v-else class="pet-value-image-placeholder"></div>
+  7  |          </div>
+
+
+ @ ./src/components/cashier/PetValueItem.vue?vue&type=template&id=747da941&scoped=true 1:0-534 1:0-534
+ @ ./src/components/cashier/PetValueItem.vue
+ @ ./node_modules/cache-loader/dist/cjs.js??ref--13-0!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--1-0!./node_modules/vue-loader/lib??vue-loader-options!./src/views/limiteds/LimitedsDeposit.vue?vue&type=script&lang=js
+ @ ./src/views/limiteds/LimitedsDeposit.vue?vue&type=script&lang=js
+ @ ./src/views/limiteds/LimitedsDeposit.vue
+ @ ./src/router/index.js
+ @ ./src/main.js
+ @ multi (webpack)-dev-server/client?http://10.8.86.5:8080&sockPath=/sockjs-node (webpack)/hot/dev-server.js ./src/main.js
+
+ WAIT  Compiling...10:19:34 PM
+
+ DONE  Compiled successfully in 1949ms10:19:36 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+
+ WAIT  Compiling...10:24:18 PM
+
+ DONE  Compiled successfully in 2415ms10:24:22 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+
+ WAIT  Compiling...10:25:00 PM
+
+ DONE  Compiled successfully in 2797ms10:25:03 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+
+ WAIT  Compiling...10:25:28 PM
+
+ DONE  Compiled successfully in 3237ms10:25:33 PM
+
+
+  App running at:
+  - Local:   http://localhost:8080/ 
+  - Network: http://10.8.86.5:8080/
+

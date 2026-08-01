@@ -1,0 +1,49 @@
+services:
+  - type: web_service
+    name: bloxygagcoin-backend
+    env: node
+    region: oregon
+    plan: free
+    rootDir: growcsn-backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: SERVER_PORT
+        value: 10000
+      - key: SERVER_FRONTEND_URL
+        value: https://bloxygagcoin-frontend.onrender.com
+      - key: SERVER_BACKEND_URL
+        value: https://bloxygagcoin-backend.onrender.com
+      - key: DATABASE_URI
+        sync: false
+      - key: CAPTCHA_SECRET
+        sync: false
+      - key: TOKEN_SECRET
+        value: replace-me
+      - key: TOKEN_EXPIRE
+        value: 1w
+      - key: BOT_KEY
+        sync: false
+
+  - type: static_site
+    name: bloxygagcoin-frontend
+    env: static
+    region: oregon
+    plan: free
+    rootDir: growcsn-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    autoDeploy: true
+    envVars:
+      - key: VUE_APP_BACKEND_URL
+        value: https://bloxygagcoin-backend.onrender.com
+      - key: VUE_APP_SOCKET_URL
+        value: https://bloxygagcoin-backend.onrender.com
+      - key: NODE_OPTIONS
+        value: --openssl-legacy-provider
