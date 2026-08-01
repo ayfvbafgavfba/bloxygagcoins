@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const express = require("express");
+const compression = require("compression");
 const http = require("http");
 const hpp = require("hpp");
 const cors = require("cors");
@@ -14,6 +15,9 @@ require("dotenv").config({ path: "./config/config.env" });
 // Init express app & create http server
 const app = express();
 const server = http.createServer(app);
+
+// Use gzip/brotli compression for responses to reduce transfer sizes
+app.use(compression());
 
 // Create allowed frontend origins array for CORS
 const frontendOrigins = process.env.SERVER_FRONTEND_URL
@@ -62,7 +66,8 @@ const frontendBuildPath = path.join(__dirname, "../growcsn-frontend/dist");
 const frontendBuildExists = fs.existsSync(frontendBuildPath);
 console.log(`Frontend build path: ${frontendBuildPath} exists=${frontendBuildExists}`);
 if (frontendBuildExists) {
-  app.use(express.static(frontendBuildPath));
+  // Serve built frontend with long cache headers for static assets
+  app.use(express.static(frontendBuildPath, { maxAge: "30d" }));
 
   app.get("/*", (req, res) => {
     res.sendFile(path.join(frontendBuildPath, "index.html"));
