@@ -9,7 +9,7 @@
         <div class="element-price">
             <img src="@/assets/img/icons/coin.svg" alt="icon" />
             <div class="price-value">
-                <span>{{ unboxFormatValue(this.box.amount).split('.')[0] }}</span>.{{ unboxFormatValue(this.box.amount).split('.')[1] }}
+                {{ unboxFormatValue(this.box.amount) }}
             </div>
         </div>
     </router-link>
@@ -29,7 +29,13 @@
         methods: {
             unboxFormatValue(value) {
                 const amount = Number(value) || 0;
-                return amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             }
         }
     }

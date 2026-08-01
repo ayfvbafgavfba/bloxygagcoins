@@ -13,7 +13,7 @@
                     <div class="text-amount">
                         <img src="@/assets/img/icons/coin.svg" alt="icon" />
                         <div class="amount-value">
-                            <span>{{ modalFormatValue(modalsData.box.amount).split('.')[0] }}</span>.{{ modalFormatValue(modalsData.box.amount).split('.')[1] }}
+                            {{ modalFormatValue(modalsData.box.amount) }}
                         </div>
                     </div>
                 </div>
@@ -50,7 +50,13 @@
             ]),
             modalFormatValue(value) {
                 const amount = Number(value) || 0;
-                return amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             }
         },
         computed: {

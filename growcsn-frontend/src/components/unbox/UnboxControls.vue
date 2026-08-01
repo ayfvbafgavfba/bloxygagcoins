@@ -21,7 +21,7 @@
                     <div class="inner-amount">
                         <img src="@/assets/img/icons/coin.svg" alt="icon" />
                         <div class="amount-value">
-                            <span>{{ unboxFormatValue(unboxBoxData.box.amount * unboxCount).split('.')[0] }}</span>.{{ unboxFormatValue(unboxBoxData.box.amount * unboxCount).split('.')[1] }}
+                            {{ unboxFormatValue(unboxBoxData.box.amount * unboxCount) }}
                         </div>
                     </div>
                 </div>
@@ -48,7 +48,13 @@
             ]),
             unboxFormatValue(value) {
                 const amount = Number(value) || 0;
-                return amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             },
             unboxBetButton() {
                 if(this.authUser.user === null) {

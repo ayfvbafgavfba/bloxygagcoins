@@ -8,7 +8,7 @@
             <div class="inner-price">
                 <img src="@/assets/img/icons/coin.svg" alt="icon" />
                 <div class="price-value">
-                    <span>{{ unboxFormatValue(item.item.amountFixed).split('.')[0] }}</span>.{{ unboxFormatValue(item.item.amountFixed).split('.')[1] }}
+                    {{ unboxFormatValue(item.item.amountFixed) }}
                 </div>
             </div>
         </div>
@@ -22,7 +22,13 @@
         methods: {
             unboxFormatValue(value) {
                 const amount = Number(value) || 0;
-                return amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             },
             localImage(src) {
                 if(!src) return '';

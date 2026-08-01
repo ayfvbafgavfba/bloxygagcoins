@@ -10,7 +10,7 @@
             <div class="select-price">
                 <img src="@/assets/img/icons/coin.svg" alt="icon" />
                 <div class="price-value">
-                    <span>{{ battlesFormatValue(box.amount).split('.')[0] }}</span>.{{ battlesFormatValue(box.amount).split('.')[1] }}
+                    {{ battlesFormatValue(box.amount) }}
                 </div>
             </div>
             <button v-on:click="battlesAddButton()" class="button-add">
@@ -52,7 +52,13 @@
             ]),
             battlesFormatValue(value) {
                 const amount = Number(value) || 0;
-                return amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             },
             battlesAddButton() {
                 this.battlesAddSelected(this.box);
