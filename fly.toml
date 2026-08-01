@@ -1,0 +1,25 @@
+app = "REPLACE_WITH_YOUR_APP_NAME"
+primary_region = "ord"
+
+[build]
+  # Using Dockerfile in repo root
+
+[deploy]
+  release_command = ""
+
+[[services]]
+  internal_port = 5001
+  protocol = "tcp"
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 250
+    soft_limit = 200
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls"]
+    port = 443
