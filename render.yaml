@@ -17,9 +17,9 @@ services:
       - key: SERVER_PORT
         value: 10000
       - key: SERVER_FRONTEND_URL
-        value: https://bloxygag.org,https://www.bloxgag.org,https://bloxygagcoins.onrender.com
+        value: https://bloxygag.org
       - key: SERVER_BACKEND_URL
-        value: https://bloxgag.org
+        value: https://bloxygag.org
       - key: VUE_APP_BACKEND_URL
         value: https://bloxygag.org
       - key: VUE_APP_SOCKET_URL
@@ -30,6 +30,8 @@ services:
         sync: false
       - key: HCAPTCHA_SECRET
         sync: false
+      - key: VUE_APP_HCAPTCHA_KEY
+        sync: false
       - key: CAPTCHA_SECRET
         sync: false
       - key: TOKEN_SECRET
@@ -39,8 +41,8 @@ services:
       - key: BOT_KEY
         sync: false
       - key: VITE_API_URL
-        value: https://bloxgag.org
+        value: https://bloxygag.org
       - key: VITE_SOCKET_URL
-        value: https://bloxgag.org
+        value: https://bloxygag.org
 
 
