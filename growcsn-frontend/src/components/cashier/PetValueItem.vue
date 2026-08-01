@@ -12,15 +12,14 @@
                 <div class="pet-value-meta">
                     <span class="pet-value-rarity">{{ item.rarity || 'Unknown' }}</span>
                     <span class="pet-value-amount">{{ formatValue(item.amount) }}</span>
+                </div>
+                <div class="pet-value-bottom-row">
                     <span v-if="item.available !== undefined" class="pet-value-available">x{{ item.available }}</span>
                 </div>
                 <div class="pet-value-controls" v-if="isSelected">
                     <button class="control" @click.stop="decrement">−</button>
                     <span class="count">{{ count }}</span>
                     <button class="control" @click.stop="increment">+</button>
-                </div>
-                <div v-else class="pet-available" v-if="item.available !== undefined">
-                    <span class="available-text">x{{ Number(item.available) || 0 }}</span>
                 </div>
             </div>
         </div>
@@ -131,19 +130,91 @@ export default {
     border-color: #55d7b1;
     box-shadow: 0 0 0 2px rgba(85, 215, 177, 0.16), 0 10px 24px rgba(0, 0, 0, 0.2);
 }
-.pet-value-left { flex: 0 0 92px; }
-.pet-value-right { flex: 1 1 auto; display:flex; flex-direction:column; }
-.pet-value-image { width:92px; height:92px; border-radius:9px; overflow:hidden; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 35% 25%, rgba(54, 130, 184, 0.5), rgba(8, 36, 57, 0.8)); }
-.pet-value-image img { width:100%; height:100%; object-fit:contain; }
-.pet-value-name { font-weight:800; color:#e4f5fb; margin-bottom:7px; line-height:1.2; }
-.pet-value-meta { display:flex; flex-wrap:wrap; gap:7px; color:#7e9db5; font-size:11px; align-items:center; font-family:'Open Sans', sans-serif; }
-.pet-value-rarity { text-transform:uppercase; letter-spacing:.5px; }
-.pet-value-amount { color:#8bffca; font-weight:700; }
-.pet-value-available { margin-left:8px; color:#8bffca; font-weight:800; }
-.pet-value-controls { margin-top:8px; display:inline-flex; align-items:center; gap:8px; }
-.control { background:transparent; border:1px solid rgba(255,255,255,0.06); color:#fff; padding:4px 8px; border-radius:6px; cursor:pointer; }
-.count { min-width:28px; text-align:center; color:#fff; font-weight:700; }
-.pet-available { margin-top:8px; color:#8bffca; font-weight:700; }
-.available-text { background: rgba(0,0,0,0.15); padding:4px 8px; border-radius:6px; }
-</style>
+.pet-value-left {
+    flex: 0 0 92px;
+}
+.pet-value-right {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+.pet-value-image {
+    width: 92px;
+    height: 92px;
+    border-radius: 9px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 35% 25%, rgba(54, 130, 184, 0.5), rgba(8, 36, 57, 0.8));
+}
+.pet-value-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.pet-value-name {
+    font-weight: 800;
+    color: #e4f5fb;
+    line-height: 1.2;
+    margin-bottom: 7px;
+    word-break: break-word;
+}
+.pet-value-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    color: #7e9db5;
+    font-size: 11px;
+    font-family: 'Open Sans', sans-serif;
+}
 .pet-value-rarity {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    color: #97b7d3;
+}
+.pet-value-amount {
+    color: #8bffca;
+    font-weight: 800;
+}
+.pet-value-bottom-row {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+}
+.pet-value-available {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 52px;
+    color: #8bffca;
+    font-weight: 800;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+.pet-value-controls {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.control {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.06);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.count {
+    min-width: 28px;
+    text-align: center;
+    color: #fff;
+    font-weight: 700;
+}
+</style>
