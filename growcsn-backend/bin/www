@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+// Legacy Render or old startup command fallback.
+// If Render still runs `node ./bin/www`, this will start the backend server.
+require("../index");
