@@ -4,9 +4,9 @@ services:
     env: node
     region: oregon
     plan: free
-    rootDir: growcsn-backend
-    buildCommand: cd ../growcsn-frontend && npm ci && npm run build && cd ../growcsn-backend && npm ci
-    startCommand: npm start
+    rootDir: Backend
+    buildCommand: npm ci
+    startCommand: node ./bin/www
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -20,11 +20,15 @@ services:
         value: https://bloxgag.org,https://www.bloxgag.org,https://bloxygagcoins.onrender.com
       - key: SERVER_BACKEND_URL
         value: https://bloxgag.org
-      - key: VUE_APP_BACKEND_URL
+      - key: VITE_API_URL
         value: https://bloxgag.org
-      - key: VUE_APP_SOCKET_URL
+      - key: VITE_SOCKET_URL
         value: https://bloxgag.org
+      - key: MONGODB_URI
+        sync: false
       - key: DATABASE_URI
+        sync: false
+      - key: HCAPTCHA_SECRET
         sync: false
       - key: CAPTCHA_SECRET
         sync: false
