@@ -49,13 +49,7 @@ export default {
     methods: {
         formatValue(amount) {
             const value = Number(amount) || 0;
-            if (value >= 1000000) {
-                return (value / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-            }
-            if (value >= 1000) {
-                return (value / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-            }
-            return value.toLocaleString();
+            return value.toLocaleString('en-US', { maximumFractionDigits: 2 });
         },
         onImageError(event) {
             try {

@@ -22,7 +22,8 @@
         props: ['item'],
         methods: {
             unboxFormatValue(value) {
-                return parseFloat(Math.floor(value / 10) / 100).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                const amount = Number(value) || 0;
+                return amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
             },
             localImage(src) { if(!src) return ''; try { const parts = src.split('/'); const file = parts[parts.length - 1]; return '/' + file; } catch (e) { return src; } },
             onImgError(event) { try { const parts = event.target.src.split('/'); const file = parts[parts.length - 1]; event.target.src = '/img/items/' + file; } catch (e) {} }
