@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 module.exports = (io) => {
-    router.get('/', (req, res) => {
+    router.get('/health', (req, res) => {
         res.status(200).json({ success: true });
     });
 
