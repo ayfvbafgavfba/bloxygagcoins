@@ -5,7 +5,7 @@ services:
     region: oregon
     plan: free
     rootDir: Backend
-    buildCommand: npm ci
+    buildCommand: npm ci --include=dev --no-audit --no-fund && npm run build:frontend
     startCommand: node ./bin/www
     healthCheckPath: /health
     autoDeploy: true
