@@ -120,7 +120,7 @@ module.exports = (io) => {
         }
     });
 
-    router.get('/gag/ping', authorizeBot, async(req, res) => {
+    const handleBotPing = async(req, res) => {
         botStatus.lastPing = new Date().getTime();
         return res.status(200).json({
             success: true,
@@ -128,7 +128,10 @@ module.exports = (io) => {
             slot: botStatus.slot || 0,
             tx_count: botStatus.txCount || 0
         });
-    });
+    };
+
+    router.get('/gag/ping', authorizeBot, handleBotPing);
+    router.post('/gag/ping', authorizeBot, handleBotPing);
 
     router.get('/gag/accounts', async(req, res) => {
         try {
