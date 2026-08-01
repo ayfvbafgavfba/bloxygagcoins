@@ -17,9 +17,13 @@ services:
       - key: SERVER_PORT
         value: 10000
       - key: SERVER_FRONTEND_URL
-        value: https://bloxygagcoin-frontend.onrender.com
+        value: https://bloxgag.org
       - key: SERVER_BACKEND_URL
-        value: https://bloxygagcoin-backend.onrender.com
+        value: https://bloxgag.org
+      - key: VUE_APP_BACKEND_URL
+        value: https://bloxgag.org
+      - key: VUE_APP_SOCKET_URL
+        value: https://bloxgag.org
       - key: DATABASE_URI
         sync: false
       - key: CAPTCHA_SECRET
