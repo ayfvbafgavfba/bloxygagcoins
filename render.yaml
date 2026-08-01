@@ -1,12 +1,12 @@
 services:
   - type: web_service
-    name: bloxygagcoin-backend
+    name: growcsn-backend
     env: node
     region: oregon
     plan: free
-    rootDir: Backend
-    buildCommand: npm ci --include=dev --no-audit --no-fund && npm run build:frontend
-    startCommand: node ./bin/www
+    rootDir: growcsn-backend
+    buildCommand: npm ci --include=dev --no-audit --no-fund && cd ../growcsn-frontend && npm ci --include=dev --no-audit --no-fund && npm run build && cd ../growcsn-backend
+    startCommand: npm start
     healthCheckPath: /health
     autoDeploy: true
     envVars:
@@ -17,13 +17,13 @@ services:
       - key: SERVER_PORT
         value: 10000
       - key: SERVER_FRONTEND_URL
-        value: https://bloxgag.org,https://www.bloxgag.org,https://bloxygagcoins.onrender.com
+        value: https://bloxygag.org,https://www.bloxgag.org,https://bloxygagcoins.onrender.com
       - key: SERVER_BACKEND_URL
         value: https://bloxgag.org
-      - key: VITE_API_URL
-        value: https://bloxgag.org
-      - key: VITE_SOCKET_URL
-        value: https://bloxgag.org
+      - key: VUE_APP_BACKEND_URL
+        value: https://bloxygag.org
+      - key: VUE_APP_SOCKET_URL
+        value: wss://bloxygag.org
       - key: MONGODB_URI
         sync: false
       - key: DATABASE_URI
@@ -38,5 +38,9 @@ services:
         value: 1w
       - key: BOT_KEY
         sync: false
+      - key: VITE_API_URL
+        value: https://bloxgag.org
+      - key: VITE_SOCKET_URL
+        value: https://bloxgag.org
 
 
