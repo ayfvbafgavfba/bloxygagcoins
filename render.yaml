@@ -4,10 +4,9 @@ services:
     env: node
     region: oregon
     plan: free
-    rootDir: growcsn-backend
-    nodeVersion: 18.18.0
-    buildCommand: cd ../growcsn-frontend && npm ci --include=dev --no-audit --no-fund && npm run build && cd ../growcsn-backend && npm ci --include=dev --no-audit --no-fund
-    startCommand: npm start
+    rootDir: Backend
+    buildCommand: npm ci --include=dev --no-audit --no-fund && npm run build:frontend
+    startCommand: node ./bin/www
     healthCheckPath: /health
     autoDeploy: true
     envVars:
