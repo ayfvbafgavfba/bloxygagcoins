@@ -127,7 +127,7 @@
                 let cost = 0;
 
                 for(let box of this.battlesSelected) {
-                    cost += (Number(box.amount) || 0) * 1000;
+                    cost += (Number(box.amount) || 0) * 100;
                 }
 
                 cost = Math.floor(cost + (cost * this.battlesGetCountPlayer * Math.floor(this.battlesFilterFunding) / 100));
