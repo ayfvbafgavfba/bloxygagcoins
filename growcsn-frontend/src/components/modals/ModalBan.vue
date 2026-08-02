@@ -54,6 +54,13 @@
                 </transition>
             </div>
         </button>
+        <button v-on:click="modalUnbanButton()" class="button-ban button-unban" v-bind:disabled="socketSendLoading === 'AdminUserBan'">
+            <div class="button-inner">
+                <transition name="fade" mode="out-in">
+                    <div class="inner-content">UNBAN USER</div>
+                </transition>
+            </div>
+        </button>
     </div>
 </template>
 
@@ -81,7 +88,8 @@
         methods: {
             ...mapActions([
                 'notificationShow', 
-                'adminSendUserBanSocket'
+                'adminSendUserBanSocket',
+                'adminSendUserUnbanSocket'
             ]),
             modalBanButton() {
                 let time = 0;
@@ -93,6 +101,10 @@
 
                 const data = { userId: this.generalUserInfo.data._id, time: time, reason: this.modalReason  };
                 this.adminSendUserBanSocket(data);
+            },
+            modalUnbanButton() {
+                const data = { userId: this.generalUserInfo.data._id };
+                this.adminSendUserUnbanSocket(data);
             }
         },
         computed: {
@@ -102,25 +114,35 @@
                 'generalUserInfo'
             ]),
             modalGetLevelColor() {
+                const user = this.generalUserInfo && this.generalUserInfo.data ? this.generalUserInfo.data : null;
                 let color = '';
 
-                if(this.generalUserInfo.data.level >= 2 && this.generalUserInfo.data.level < 26) { color = 'blue'; }
-                else if(this.generalUserInfo.data.level >= 26 && this.generalUserInfo.data.level < 51) { color = 'green'; }
-                else if(this.generalUserInfo.data.level >= 51 && this.generalUserInfo.data.level < 76) { color = 'orange'; }
-                else if(this.generalUserInfo.data.level >= 76 && this.generalUserInfo.data.level < 100) { color = 'red'; }
-                else if(this.generalUserInfo.data.level >= 100) { color = 'purple'; }
+                if(user === null) { return color; }
+
+                if(user.level >= 2 && user.level < 26) { color = 'blue'; }
+                else if(user.level >= 26 && user.level < 51) { color = 'green'; }
+                else if(user.level >= 51 && user.level < 76) { color = 'orange'; }
+                else if(user.level >= 76 && user.level < 100) { color = 'red'; }
+                else if(user.level >= 100) { color = 'purple'; }
 
                 return color;
             },
             modalGetRank() {
+                const user = this.generalUserInfo && this.generalUserInfo.data ? this.generalUserInfo.data : null;
                 let rank = null;
 
-                if(this.generalUserInfo.data.rank !== 'user') { rank = this.generalUserInfo.data.rank; }
+                if(user !== null && user.rank !== 'user') { rank = user.rank; }
 
                 return rank;
             },
             modalGetDate() {
-                const date = new Date(this.generalUserInfo.data.createdAt);
+                const user = this.generalUserInfo && this.generalUserInfo.data ? this.generalUserInfo.data : null;
+
+                if(user === null || user.createdAt === undefined) {
+                    return '';
+                }
+
+                const date = new Date(user.createdAt);
                 return (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
             }
         }

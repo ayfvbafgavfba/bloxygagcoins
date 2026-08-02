@@ -590,12 +590,12 @@ const actions = {
     },
     adminSendUserUnbanSocket({ getters, commit, dispatch }, data) {
         if(getters.socketAdmin === null || getters.socketSendLoading !== null) { return; }
-        commit('socket_set_send_loading', 'AdminUserUnban');
+        commit('socket_set_send_loading', 'AdminUserBan');
 
         getters.socketAdmin.emit('sendUserUnban', data, (res) => {
             if(res.success === true) {
                 dispatch('modalsSetData', { user: res.user });
-                dispatch('modalsSetShow', null)
+                dispatch('notificationShow', { type: 'success', message: 'You have successfully unbanned the user.' });
 
                 if(getters.adminUserList.data !== null) { commit('admin_update_user_list', res.user); }
             } else {

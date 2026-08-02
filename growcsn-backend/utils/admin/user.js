@@ -97,6 +97,20 @@ const adminCheckSendUserBanData = (data) => {
         throw new Error('Your entered ban reason is invalid.');
     }
 }
+const adminCheckSendUserUnbanData = (data) => {
+    if(data === undefined || data === null) {
+        throw new Error('Something went wrong. Please try again in a few seconds.');
+    } else if(data.userId === undefined || data.userId === null || typeof data.userId !== 'string' || validator.isMongoId(data.userId) !== true) {
+        throw new Error('Your entered user id is invalid.');
+    }
+}
+const adminCheckSendUserUnbanData = (data) => {
+    if(data === undefined || data === null) {
+        throw new Error('Something went wrong. Please try again in a few seconds.');
+    } else if(data.userId === undefined || data.userId === null || typeof data.userId !== 'string' || validator.isMongoId(data.userId) !== true) {
+        throw new Error('Your entered user id is invalid.');
+    }
+}
 
 const adminFormatUserSort = (value) => {
     let sort = { createdAt: -1 };
@@ -123,5 +137,6 @@ module.exports = {
     adminCheckSendUserBalanceUser,
     adminCheckSendUserMuteData,
     adminCheckSendUserBanData,
+    adminCheckSendUserUnbanData,
     adminFormatUserSort
 }

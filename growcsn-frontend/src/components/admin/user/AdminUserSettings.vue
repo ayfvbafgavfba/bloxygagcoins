@@ -112,6 +112,12 @@
                 <div class="button-inner">BAN</div>
             </button>
         </div>
+        <div class="settings-element element-button">
+            <div class="element-name">UNBAN USER</div>
+            <button v-on:click="adminUnbanButton()" class="button-red">
+                <div class="button-inner">UNBAN</div>
+            </button>
+        </div>
     </div>
 </template>
 
@@ -136,6 +142,7 @@
                 'modalsSetShow',
                 'adminSendUserValueSocket',
                 'adminSendUserBalanceSocket', 
+                'adminSendUserUnbanSocket',
                 'generalSetUserInfoData'
             ]),
             adminValueButton(setting, value) {
@@ -169,6 +176,10 @@
                 this.generalSetUserInfoData(this.modalsData.user);
 
                 setTimeout(() => { this.modalsSetShow('Ban'); }, 300);
+            },
+            adminUnbanButton() {
+                const data = { userId: this.modalsData.user._id };
+                this.adminSendUserUnbanSocket(data);
             }
         },
         computed: {

@@ -34,6 +34,7 @@ const {
     adminCheckSendUserBalanceUser,
     adminCheckSendUserMuteData,
     adminCheckSendUserBanData,
+    adminCheckSendUserUnbanData,
     adminFormatUserSort
 } = require('../../../utils/admin/user');
 
@@ -293,9 +294,12 @@ const adminSendUserBanSocket = async(io, socket, user, data, callback) => {
 
 const adminSendUserUnbanSocket = async(io, socket, user, data, callback) => {
     try {
-        // Remove ban from user
-        const userDatabase = await User.findByIdAndUpdate(data.userId, { 
-            ban: null
+        // Validate sent data
+        adminCheckSendUserUnbanData(data);
+
+        // Remove user ban
+        const userDatabase = await User.findByIdAndUpdate(data.userId, {
+            ban: {}
         }, { new: true }).select('local.email local.emailVerified roblox.id discord.id username avatar balance xp vault rank stats leaderboard limits ips mute ban updatedAt createdAt').lean();
 
         callback({ success: true, user: userDatabase });
