@@ -39,11 +39,16 @@ export default {
     methods: {
         ...mapActions(['cashierRemoveLimitedDataSelected']),
         cashierFormatValue(value) {
+            const v = Number(value || 0);
+
+            // For limited routes show human-friendly K/M suffixes (matches other item displays)
             if (this.cashierGetRouteName.includes('Limiteds')) {
-                return Number(value || 0).toLocaleString('en-US');
+                if (v >= 1000000) return (v / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                if (v >= 1000) return (v / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                return v.toLocaleString('en-US');
             }
 
-            return parseFloat(Math.floor(value / 10) / 100).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return parseFloat(Math.floor(v / 10) / 100).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         },
         localImage(src) {
             if(!src) return '';
