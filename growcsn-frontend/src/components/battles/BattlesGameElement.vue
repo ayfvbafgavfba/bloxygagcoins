@@ -47,13 +47,13 @@
                         <div class="inner-effective">
                             <img src="@/assets/img/icons/coin.svg" alt="icon" />
                             <div class="effective-value">
-                                {{ battlesFormatValue((game.amount - Math.floor(game.amount * game.options.funding / 100)) * 100) }}
+                                {{ battlesFormatValue((game.amount - Math.floor(game.amount * game.options.funding / 100)) * 10) }}
                             </div>
                         </div>
                         <div v-if="game.options.funding > 0" class="inner-real">
                             <img src="@/assets/img/icons/coin.svg" alt="icon" />
                             <div class="real-value">
-                                {{ battlesFormatValue(game.amount * 100) }}
+                                {{ battlesFormatValue(game.amount * 10) }}
                             </div>
                         </div>
                     </div>

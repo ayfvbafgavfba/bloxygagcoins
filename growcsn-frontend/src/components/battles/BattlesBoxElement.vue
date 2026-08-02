@@ -10,7 +10,7 @@
             <div class="select-price">
                 <img src="@/assets/img/icons/coin.svg" alt="icon" />
                 <div class="price-value">
-                    {{ battlesFormatValue(box.amount * 100) }}
+                    {{ battlesFormatValue(box.amount * 10) }}
                 </div>
             </div>
             <button v-on:click="battlesAddButton()" class="button-add">

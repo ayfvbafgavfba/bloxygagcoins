@@ -48,7 +48,7 @@
                         <div class="completed-amount">
                             <img src="@/assets/img/icons/coin.svg" alt="icon" />
                             <div class="amount-value">
-                                {{ battlesFormatValue(bet.payout * 100) }}
+                                {{ battlesFormatValue(bet.payout * 10) }}
                             </div>
                         </div>
                         <div class="completed-action">
