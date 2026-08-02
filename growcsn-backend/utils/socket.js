@@ -17,8 +17,9 @@ let socketActiveRequests = [];
 const socketCheckUserData = (user, checkAuth) => {
     if(checkAuth === true && user === null) {
         throw new Error('You need to sign in to perform this action.');
-    } else if(checkAuth === true && user.ban !== undefined && new Date(user.ban.expire).getTime() > new Date().getTime()) {
-        throw new Error(`You got banned for ${user.ban.type} because of the reason: ${user.ban.reason}.`);
+    } else if(checkAuth === true && user.ban !== undefined && user.ban.expire !== undefined && new Date(user.ban.expire).getTime() > new Date().getTime()) {
+        const banDuration = user.ban.expire === 'permanent' ? 'permanently' : `until ${new Date(user.ban.expire).toLocaleString()}`;
+        throw new Error(`You got banned ${banDuration} because of the reason: ${user.ban.reason}.`);
     }
 }
 
