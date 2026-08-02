@@ -1,5 +1,5 @@
 <template>
-    <a class="banner-mode" href="https://discord.gg/growcsn" target="_blank">
+    <a class="banner-mode" href="https://discord.gg/tgCMsajme" target="_blank">
         <div class="mode-text">
             <div class="text-title">NEW <span>GAME MODE</span> COMING SOON</div>
             <div class="text-info">

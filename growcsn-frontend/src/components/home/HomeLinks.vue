@@ -34,24 +34,9 @@
                 <button v-on:click="modalsSetShow('Fair')" class="button-fair">PROVABLY FAIR</button>
             </div>
             <div class="bottom-socials">
-                <a href="#" target="_blank">
-                    <div class="link-inner">
-                        <IconTwitter />
-                    </div>
-                </a>
-                <a href="#" target="_blank">
+                <a href="https://discord.gg/tgCMsajme" target="_blank">
                     <div class="link-inner">
                         <IconDiscord />
-                    </div>
-                </a>
-                <a href="#" target="_blank">
-                    <div class="link-inner">
-                        <IconYoutube />
-                    </div>
-                </a>
-                <a href="#" target="_blank">
-                    <div class="link-inner">
-                        <IconTwitch />
                     </div>
                 </a>
             </div>
@@ -69,10 +54,7 @@
 
 <script>
     import { mapActions } from 'vuex';
-    import IconTwitter from '@/components/icons/IconTwitter';
     import IconDiscord from '@/components/icons/IconDiscord';
-    import IconYoutube from '@/components/icons/IconYoutube';
-    import IconTwitch from '@/components/icons/IconTwitch';
     import HomeFeaturedLink from '@/components/home/HomeFeaturedLink';
     import HomePlaceholderElement from '@/components/home/HomePlaceholderElement';
 
@@ -83,10 +65,7 @@
             meta: [{ name: 'description', content: 'BloxyGAG.com the leading roblox gambling experience.' }]
         },
         components: {
-            IconTwitter,
             IconDiscord,
-            IconYoutube,
-            IconTwitch,
             HomeFeaturedLink,
             HomePlaceholderElement
         },
