@@ -12,7 +12,7 @@
                 <div class="info-amount">
                     <img src="@/assets/img/icons/coin.svg" alt="icon" />
                     <div class="amount-value">
-                        {{ battlesFormatValue(item.item.amountFixed * 1000) }}
+                        {{ battlesFormatValue(item.item.amountFixed) }}
                     </div>
                 </div>
             </div>
