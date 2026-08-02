@@ -1,18 +1,18 @@
 <template>
-    <div class="admin-user-settings">
+    <div class="admin-user-settings" v-if="adminUser">
         <div class="settings-element element-toggle">
             <div class="element-name">RAIN LOCK</div>
-            <button v-on:click="adminValueButton('limits.blockRain', !modalsData.user.limits.blockRain)" v-bind:class="{ 
-                'button-active': modalsData.user.limits.blockRain === true 
+            <button v-on:click="adminValueButton('limits.blockRain', !adminUser.limits.blockRain)" v-bind:class="{ 
+                'button-active': adminUser.limits.blockRain === true 
             }" v-bind:disabled="socketSendLoading !== null"></button>
         </div>
         <div class="settings-element element-toggle">
             <div class="element-name">TIP LOCK</div>
-            <button v-on:click="adminValueButton('limits.blockTip', !modalsData.user.limits.blockTip)" v-bind:class="{ 
-                'button-active': modalsData.user.limits.blockTip === true 
+            <button v-on:click="adminValueButton('limits.blockTip', !adminUser.limits.blockTip)" v-bind:class="{ 
+                'button-active': adminUser.limits.blockTip === true 
             }" v-bind:disabled="socketSendLoading !== null"></button>
         </div>
-        <div v-if="modalsData.user.limits.blockTip === true" class="settings-element element-sub element-number">
+        <div v-if="adminUser.limits.blockTip === true" class="settings-element element-sub element-number">
             <div class="element-name">SET TIP LIMIT</div>
             <div class="element-input">
                 <img src="@/assets/img/icons/coin.svg" alt="icon" />
@@ -24,14 +24,14 @@
         </div>
         <div class="settings-element element-toggle">
             <div class="element-name">SPONSORSHIP LOCK</div>
-            <button v-on:click="adminValueButton('limits.blockSponsor', !modalsData.user.limits.blockSponsor)" v-bind:class="{ 
-                'button-active': modalsData.user.limits.blockSponsor === true 
+            <button v-on:click="adminValueButton('limits.blockSponsor', !adminUser.limits.blockSponsor)" v-bind:class="{ 
+                'button-active': adminUser.limits.blockSponsor === true 
             }" v-bind:disabled="socketSendLoading !== null"></button>
         </div>
         <div class="settings-element element-toggle">
             <div class="element-name">LEADERBOARD LOCK</div>
-            <button v-on:click="adminValueButton('limits.blockLeaderboard', !modalsData.user.limits.blockLeaderboard)" v-bind:class="{ 
-                'button-active': modalsData.user.limits.blockLeaderboard === true 
+            <button v-on:click="adminValueButton('limits.blockLeaderboard', !adminUser.limits.blockLeaderboard)" v-bind:class="{ 
+                'button-active': adminUser.limits.blockLeaderboard === true 
             }" v-bind:disabled="socketSendLoading !== null"></button>
         </div>
         <div class="settings-element element-button">
@@ -42,8 +42,8 @@
         </div>
         <div class="settings-element element-toggle">
             <div class="element-name">BOT ACCOUNT</div>
-            <button v-on:click="adminValueButton('bot', !modalsData.user.bot)" v-bind:class="{ 
-                'button-active': modalsData.user.bot === true 
+            <button v-on:click="adminValueButton('bot', !adminUser.bot)" v-bind:class="{ 
+                'button-active': adminUser.bot === true 
             }" v-bind:disabled="socketSendLoading !== null"></button>
         </div>
         <div class="settings-element element-select">
@@ -108,11 +108,8 @@
         </div>
         <div class="settings-element element-button">
             <div class="element-name">BAN USER</div>
-            <button v-if="modalsData.user.disciplinary.ban === null || modalsData.user.disciplinary.ban === undefined" v-on:click="adminBanButton()" class="button-red">
+            <button v-on:click="adminBanButton()" class="button-red">
                 <div class="button-inner">BAN</div>
-            </button>
-            <button v-else v-on:click="adminUnbanButton()" class="button-green">
-                <div class="button-inner">UNBAN</div>
             </button>
         </div>
     </div>
@@ -138,8 +135,7 @@
                 'notificationShow',
                 'modalsSetShow',
                 'adminSendUserValueSocket',
-                'adminSendUserBalanceSocket',
-                'adminSendUserUnbanSocket',
+                'adminSendUserBalanceSocket', 
                 'generalSetUserInfoData'
             ]),
             adminValueButton(setting, value) {
@@ -173,38 +169,51 @@
                 this.generalSetUserInfoData(this.modalsData.user);
 
                 setTimeout(() => { this.modalsSetShow('Ban'); }, 300);
-            },
-            adminUnbanButton() {
-                const data = { userId: this.modalsData.user._id };
-                this.adminSendUserUnbanSocket(data);
             }
         },
         computed: {
             ...mapGetters([
                 'socketSendLoading',  
                 'modalsData'
-            ])
+            ]),
+            adminUser() {
+                return {
+                    limits: {
+                        blockRain: false,
+                        blockTip: false,
+                        blockSponsor: false,
+                        blockLeaderboard: false,
+                        limitTip: 0
+                    },
+                    bot: false,
+                    rank: 'user',
+                    balance: 0,
+                    vault: { amount: 0 },
+                    stats: { deposit: 0, withdraw: 0 },
+                    ...((this.modalsData && this.modalsData.user) || {})
+                };
+            }
         },
         watch: {
-            'modalsData': {
-                handler(data, oldData) {
-                    this.adminLimitTip = (Math.floor(this.modalsData.user.limits.limitTip / 10) / 100).toFixed(2);
-                    this.adminRank = this.modalsData.user.rank;
-                    this.adminBalance = (Math.floor(this.modalsData.user.balance / 10) / 100).toFixed(2);
-                    this.adminVault = (Math.floor(this.modalsData.user.vault.amount / 10) / 100).toFixed(2);
-                    this.adminDeposit = (Math.floor(this.modalsData.user.stats.deposit / 10) / 100).toFixed(2);
-                    this.adminWithdraw = (Math.floor(this.modalsData.user.stats.withdraw / 10) / 100).toFixed(2);
+            modalsData: {
+                handler(data) {
+                    this.adminLimitTip = (Math.floor(this.adminUser.limits.limitTip / 10) / 100).toFixed(2);
+                    this.adminRank = this.adminUser.rank;
+                    this.adminBalance = (Math.floor(this.adminUser.balance / 10) / 100).toFixed(2);
+                    this.adminVault = (Math.floor(this.adminUser.vault.amount / 10) / 100).toFixed(2);
+                    this.adminDeposit = (Math.floor(this.adminUser.stats.deposit / 10) / 100).toFixed(2);
+                    this.adminWithdraw = (Math.floor(this.adminUser.stats.withdraw / 10) / 100).toFixed(2);
                 },
                 deep: true
             }
         },
         created() {
-            this.adminLimitTip = (Math.floor(this.modalsData.user.limits.limitTip / 10) / 100).toFixed(2);
-            this.adminRank = this.modalsData.user.rank;
-            this.adminBalance = (Math.floor(this.modalsData.user.balance / 10) / 100).toFixed(2);
-            this.adminVault = (Math.floor(this.modalsData.user.vault.amount / 10) / 100).toFixed(2);
-            this.adminDeposit = (Math.floor(this.modalsData.user.stats.deposit / 10) / 100).toFixed(2);
-            this.adminWithdraw = (Math.floor(this.modalsData.user.stats.withdraw / 10) / 100).toFixed(2);
+            this.adminLimitTip = (Math.floor(this.adminUser.limits.limitTip / 10) / 100).toFixed(2);
+            this.adminRank = this.adminUser.rank;
+            this.adminBalance = (Math.floor(this.adminUser.balance / 10) / 100).toFixed(2);
+            this.adminVault = (Math.floor(this.adminUser.vault.amount / 10) / 100).toFixed(2);
+            this.adminDeposit = (Math.floor(this.adminUser.stats.deposit / 10) / 100).toFixed(2);
+            this.adminWithdraw = (Math.floor(this.adminUser.stats.withdraw / 10) / 100).toFixed(2);
         }
     }
 </script>
@@ -340,10 +349,6 @@
 
    .admin-user-settings .settings-element.element-button button.button-red .button-inner {
        background: #f55046;
-   }
-
-   .admin-user-settings .settings-element.element-button button.button-green .button-inner {
-       background: #00aa6d;
    }
 
    @media only screen and (max-width: 793px) {
