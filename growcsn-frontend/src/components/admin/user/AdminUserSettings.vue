@@ -108,8 +108,11 @@
         </div>
         <div class="settings-element element-button">
             <div class="element-name">BAN USER</div>
-            <button v-on:click="adminBanButton()" class="button-red">
+            <button v-if="modalsData.user.disciplinary.ban === null || modalsData.user.disciplinary.ban === undefined" v-on:click="adminBanButton()" class="button-red">
                 <div class="button-inner">BAN</div>
+            </button>
+            <button v-else v-on:click="adminUnbanButton()" class="button-green">
+                <div class="button-inner">UNBAN</div>
             </button>
         </div>
     </div>
@@ -135,7 +138,8 @@
                 'notificationShow',
                 'modalsSetShow',
                 'adminSendUserValueSocket',
-                'adminSendUserBalanceSocket', 
+                'adminSendUserBalanceSocket',
+                'adminSendUserUnbanSocket',
                 'generalSetUserInfoData'
             ]),
             adminValueButton(setting, value) {
@@ -169,6 +173,10 @@
                 this.generalSetUserInfoData(this.modalsData.user);
 
                 setTimeout(() => { this.modalsSetShow('Ban'); }, 300);
+            },
+            adminUnbanButton() {
+                const data = { userId: this.modalsData.user._id };
+                this.adminSendUserUnbanSocket(data);
             }
         },
         computed: {
@@ -332,6 +340,10 @@
 
    .admin-user-settings .settings-element.element-button button.button-red .button-inner {
        background: #f55046;
+   }
+
+   .admin-user-settings .settings-element.element-button button.button-green .button-inner {
+       background: #00aa6d;
    }
 
    @media only screen and (max-width: 793px) {

@@ -291,6 +291,22 @@ const adminSendUserBanSocket = async(io, socket, user, data, callback) => {
     }
 }
 
+const adminSendUserUnbanSocket = async(io, socket, user, data, callback) => {
+    try {
+        // Remove ban from user
+        const userDatabase = await User.findByIdAndUpdate(data.userId, { 
+            ban: null
+        }, { new: true }).select('local.email local.emailVerified roblox.id discord.id username avatar balance xp vault rank stats leaderboard limits ips mute ban updatedAt createdAt').lean();
+
+        callback({ success: true, user: userDatabase });
+
+        socketRemoveAntiSpam(user._id);
+    } catch(err) {
+        socketRemoveAntiSpam(socket.decoded._id);
+        callback({ success: false, error: { type: 'error', message: err.message } });
+    }
+}
+
 module.exports = {
     adminGetUserListSocket,
     adminGetUserDataSocket,
@@ -299,5 +315,6 @@ module.exports = {
     adminSendUserValueSocket,
     adminSendUserBalanceSocket,
     adminSendUserMuteSocket,
-    adminSendUserBanSocket
+    adminSendUserBanSocket,
+    adminSendUserUnbanSocket
 }

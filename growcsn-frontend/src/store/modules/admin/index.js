@@ -588,6 +588,23 @@ const actions = {
             commit('socket_set_send_loading', null);
         });
     },
+    adminSendUserUnbanSocket({ getters, commit, dispatch }, data) {
+        if(getters.socketAdmin === null || getters.socketSendLoading !== null) { return; }
+        commit('socket_set_send_loading', 'AdminUserUnban');
+
+        getters.socketAdmin.emit('sendUserUnban', data, (res) => {
+            if(res.success === true) {
+                dispatch('modalsSetData', { user: res.user });
+                dispatch('modalsSetShow', null)
+
+                if(getters.adminUserList.data !== null) { commit('admin_update_user_list', res.user); }
+            } else {
+                dispatch('notificationShow', res.error);
+            }
+
+            commit('socket_set_send_loading', null);
+        });
+    },
     adminSendAffiliateBlockSocket({ getters, commit, dispatch }, data) {
         if(getters.socketAdmin === null || getters.socketSendLoading !== null) { return; }
         commit('socket_set_send_loading', 'AdminAffiliateBlock');
