@@ -59,14 +59,14 @@
 
                 let filtered = items.filter((item) => item.name.toLowerCase().includes(this.cashierFilterSearch.toLowerCase().trim()));
 
-                // Only show items if admin has explicitly added allowedPets entries.
-                if(!(this.generalSettings && Array.isArray(this.generalSettings.limited?.allowedPets) && this.generalSettings.limited.allowedPets.length > 0)) {
-                    return [];
-                }
+                const allowed = Array.isArray(this.generalSettings?.limited?.allowedPets)
+                    ? this.generalSettings.limited.allowedPets
+                    : [];
 
-                const allowed = this.generalSettings.limited.allowedPets;
-                // pet unique id is `uniqueId` in this view
-                filtered = filtered.filter((item) => allowed.includes(item.uniqueId));
+                if (allowed.length > 0) {
+                    // pet unique id is `uniqueId` in this view
+                    filtered = filtered.filter((item) => allowed.includes(item.uniqueId));
+                }
 
                 // attach admin-provided counts from settings (allowedPetCounts)
                 const counts = (this.generalSettings.limited && this.generalSettings.limited.allowedPetCounts) || {};
