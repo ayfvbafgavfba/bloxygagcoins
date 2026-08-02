@@ -8,7 +8,7 @@
             <div class="inner-price">
                 <img src="@/assets/img/icons/coin.svg" alt="icon" />
                 <div class="price-value">
-                    {{ unboxFormatValue(item.item.amountFixed * 10) }}
+                    {{ unboxFormatValue(item.item.amountFixed * 1) }}
                 </div>
             </div>
         </div>

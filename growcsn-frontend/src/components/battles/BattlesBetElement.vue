@@ -19,7 +19,7 @@
                     <div class="info-amount">
                         <img src="@/assets/img/icons/coin.svg" alt="icon" />
                         <div class="amount-value">
-                            {{ battlesFormatValue(battlesGetOutcomeAmount * 10) }}
+                            {{ battlesFormatValue(battlesGetOutcomeAmount * 1) }}
                         </div>
                     </div>
                 </div>
