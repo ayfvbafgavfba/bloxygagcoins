@@ -77,8 +77,9 @@ const unboxSendBetSocket = async(io, socket, user, data, callback) => {
         // Get unbox count
         const unboxCount = Math.floor(data.unboxCount);
 
-        // Get total bet amount
-        const amountBetTotal = Math.floor(boxDatabase.amount * unboxCount);
+        // Get total bet amount (convert box amounts to internal units)
+        const amountPerBox = Math.floor(boxDatabase.amount * 1000);
+        const amountBetTotal = Math.floor(amountPerBox * unboxCount);
 
         // Validate user
         unboxCheckSendBetUser(user, amountBetTotal);
@@ -124,14 +125,14 @@ const unboxSendBetSocket = async(io, socket, user, data, callback) => {
             // Get box item for game outcome
             const outcomeItem = unboxGetOutcomeItem(boxDatabase, outcome);
 
-            // Add payout amount to payout amount variable
-            amountPayout = amountPayout + outcomeItem.amountFixed;
+            // Add payout amount to payout amount variable (scaled to internal units)
+            amountPayout = amountPayout + (outcomeItem.amountFixed * 1000);
 
             // Add create unbox game query to promises array
             promises.push(
                 UnboxGame.create({
-                    amount: boxDatabase.amount,
-                    payout: outcomeItem.amountFixed,
+                    amount: amountPerBox,
+                    payout: outcomeItem.amountFixed * 1000,
                     multiplier: Math.floor((outcomeItem.amountFixed / boxDatabase.amount) * 100),
                     outcome: outcome,
                     box: boxDatabase._id,
