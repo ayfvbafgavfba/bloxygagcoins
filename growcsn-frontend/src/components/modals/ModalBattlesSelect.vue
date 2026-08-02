@@ -47,7 +47,7 @@
                 TOTAL COST:
                 <img src="@/assets/img/icons/coin.svg" alt="icon" />
                 <div class="cost-value">
-                    <span>{{ battlesFormatValue(battlesGetCost).split('.')[0] }}</span>.{{ battlesFormatValue(battlesGetCost).split('.')[1] }}
+                    {{ battlesFormatValue(battlesGetCost) }}
                 </div>
             </div>
             <button v-on:click="modalsSetShow(null)" class="button-add">
@@ -87,7 +87,14 @@
                 'battlesSendCreateSocket'
             ]),
             battlesFormatValue(value) {
-                return parseFloat(Math.floor(value / 10) / 100).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                const amount = Number(value) || 0;
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             }
         },
         computed: {
@@ -144,7 +151,7 @@
                 let cost = 0;
 
                 for(let box of this.battlesSelected) {
-                    cost = Math.floor(cost + box.amount);
+                    cost = Math.floor(cost + (box.amount * 1000));
                 }
 
                 cost = Math.floor(cost + (cost * this.battlesGetCountPlayer * Math.floor(this.battlesFilterFunding) / 100));
