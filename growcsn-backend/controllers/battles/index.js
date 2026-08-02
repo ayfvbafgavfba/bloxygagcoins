@@ -470,8 +470,9 @@ const battlesGameRoll = async(io, battlesGame) => {
                     // Get outcome for slot bet from combined hash
                     const outcome = parseInt(hash.substr(0, 8), 16) % 100000;
     
-                    // Add round payout amount to bet
-                    battlesGame.bets[slot].payout = battlesGame.bets[slot].payout + battlesGetOutcomeItem(round.box.items, outcome).amountFixed;
+                    // Add round payout amount to bet (scale to internal units)
+                    const outcomeItem = battlesGetOutcomeItem(round.box.items, outcome);
+                    battlesGame.bets[slot].payout = battlesGame.bets[slot].payout + (outcomeItem.amountFixed * 1000);
     
                     // Add roll outcome to bet
                     battlesGame.bets[slot].outcomes.push(outcome);

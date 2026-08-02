@@ -199,7 +199,11 @@ const battlesGetGameIndex = (battlesGames, gameId) => {
 const battlesGetAmountGame = (boxes) => {
     let amount = 0;
 
-    for(let box of boxes) { amount = amount + Math.floor(box.box.amount * box.count); }
+    // Sum using internal units (scale box amounts by 1000)
+    for(let box of boxes) {
+        const amountPerBox = Math.floor(box.box.amount * 1000);
+        amount = amount + Math.floor(amountPerBox * box.count);
+    }
 
     return amount;
 }
@@ -208,8 +212,12 @@ const battlesGetAmountWin = (battlesGame) => {
     const rounds = battlesGetRounds(battlesGame.boxes);
     let amount = 0;
 
+    // Sum win amounts using internal units (scale item.amountFixed by 1000)
     for(const bet of battlesGame.bets) {
-        for(const [index, outcome] of bet.outcomes.entries()) { amount = Math.floor(amount + battlesGetOutcomeItem(rounds[index].box.items, outcome).amountFixed); }
+        for(const [index, outcome] of bet.outcomes.entries()) {
+            const item = battlesGetOutcomeItem(rounds[index].box.items, outcome);
+            amount = Math.floor(amount + (item.amountFixed * 1000));
+        }
     }
 
     return amount;
