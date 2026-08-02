@@ -5,9 +5,21 @@ let requestProxiesUsed = [];
 
 const requestInit = async() => {
     try {
+        const apiKeyRaw = typeof process.env.WEBSHARE_API_KEY === 'string' ? process.env.WEBSHARE_API_KEY : '';
+        const apiKey = apiKeyRaw.replace(/[\n\r]+/g, '').replace(/^['"]|['"]$/g, '').trim();
+
+        if(apiKey === '') {
+            console.error('WEBSHARE_API_KEY is not set. Proxy initialization skipped. Set WEBSHARE_API_KEY in config/config.env or your environment.');
+            return;
+        }
+
+        if(apiKey !== apiKeyRaw.trim()) {
+            console.warn('WEBSHARE_API_KEY contained line breaks, quotes, or extra whitespace; it was sanitized before use. Please verify the key value.');
+        }
+
         // Create header object
         let headers = {
-            'Authorization': process.env.WEBSHARE_API_KEY
+            'Authorization': apiKey
         };
 
         // Create page variable
@@ -26,10 +38,13 @@ const requestInit = async() => {
 
                 if((page * 100) < response.count) { page = page + 1; } 
                 else { break; }
-            } else { console.error(`ERROR: ${response.statusText}`); break; }
+            } else {
+                console.error(`WEBSHARE proxy init failed: ${response.status} ${response.statusText}`);
+                break;
+            }
         }
     } catch(err) {
-        console.error(`ERROR: ${err.message}`);
+        console.error(`WEBSHARE proxy init error: ${err.message}`);
     }
 }
 

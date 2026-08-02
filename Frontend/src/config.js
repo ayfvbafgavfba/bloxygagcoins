@@ -46,11 +46,11 @@ const apiOverride = import.meta.env.VITE_API_URL;
 const socketOverride = import.meta.env.VITE_SOCKET_URL;
 
 function getProductionApiUrl() {
-  return apiOverride || "https://bloxygag-backend.onrender.com";
+  return apiOverride || "https://bloxygag.org";
 }
 
 function getProductionSocketUrl() {
-  return socketOverride || "https://bloxygag-backend.onrender.com";
+  return socketOverride || "https://bloxygag.org";
 }
 
 export default {
