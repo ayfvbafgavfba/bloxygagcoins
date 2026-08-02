@@ -201,7 +201,8 @@ const unboxSendBetSocket = async(io, socket, user, data, callback) => {
         // Send updated rain to frontend
         io.of('/general').emit('rain', { rain: dataDatabase[2] });
 
-        callback({ success: true, user: { ...dataDatabase[0], balance: Math.floor(user.balance - amountBetTotal) }, games: gamesDatabase });
+        // Return the updated user object from the database (dataDatabase[0]) to avoid temporary mismatch
+        callback({ success: true, user: dataDatabase[0], games: gamesDatabase });
 
         setTimeout(async() => {
             // Send updated user to frontend
