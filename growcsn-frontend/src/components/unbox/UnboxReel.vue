@@ -13,7 +13,7 @@
                 <div class="info-amount">
                     <img src="@/assets/img/icons/coin.svg" alt="icon" />
                     <div class="amount-value">
-                        <span>{{ unboxFormatValue(item.item.amountFixed).split('.')[0] }}</span>.{{ unboxFormatValue(item.item.amountFixed).split('.')[1] }}
+                        {{ unboxFormatValue(item.item.amountFixed) }}
                     </div>
                 </div>
             </div>
@@ -45,7 +45,14 @@
         ],
         methods: {
             unboxFormatValue(value) {
-                return parseFloat(Math.floor(value / 10) / 100).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                const amount = Number(value) || 0;
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             },
             localImage(src) { if(!src) return ''; try { const parts = src.split('/'); const file = parts[parts.length - 1]; return '/' + file; } catch (e) { return src; } },
             onImgError(event) { try { const parts = event.target.src.split('/'); const file = parts[parts.length - 1]; event.target.src = '/img/items/' + file; } catch (e) {} }

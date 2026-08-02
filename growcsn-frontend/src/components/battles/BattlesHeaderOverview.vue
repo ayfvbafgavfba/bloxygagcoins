@@ -19,7 +19,7 @@
                     <div class="container-inner">
                         <img src="@/assets/img/icons/coin.svg" alt="icon" />
                         <div class="inner-value">
-                            <span>{{ battlesFormatValue(battlesGetAmountTotal).split('.')[0] }}</span>.{{ battlesFormatValue(battlesGetAmountTotal).split('.')[1] }}
+                            {{ battlesFormatValue(battlesGetAmountTotal) }}
                         </div>
                     </div>
                 </div>
@@ -53,7 +53,14 @@
         },
         methods: {
             battlesFormatValue(value) {
-                return parseFloat(Math.floor(value / 10) / 100).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                const amount = Number(value) || 0;
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             }
         },
         computed: {

@@ -19,7 +19,7 @@
                     <div class="info-amount">
                         <img src="@/assets/img/icons/coin.svg" alt="icon" />
                         <div class="amount-value">
-                            <span>{{ battlesFormatValue(battlesGetOutcomeAmount).split('.')[0] }}</span>.{{ battlesFormatValue(battlesGetOutcomeAmount).split('.')[1] }}
+                            {{ battlesFormatValue(battlesGetOutcomeAmount) }}
                         </div>
                     </div>
                 </div>
@@ -84,7 +84,14 @@
                 'battlesSendJoinSocket'
             ]),
             battlesFormatValue(value) {
-                return parseFloat(Math.floor(value / 10) / 100).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                const amount = Number(value) || 0;
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             },
             battlesGetRank(user) {
                 let rank = user.rakeback;

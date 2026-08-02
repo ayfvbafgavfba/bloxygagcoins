@@ -47,13 +47,13 @@
                         <div class="inner-effective">
                             <img src="@/assets/img/icons/coin.svg" alt="icon" />
                             <div class="effective-value">
-                                <span>{{ battlesFormatValue(game.amount - Math.floor(game.amount * game.options.funding / 100)).split('.')[0] }}</span>.{{ battlesFormatValue(game.amount - Math.floor(game.amount * game.options.funding / 100)).split('.')[1] }}
+                                {{ battlesFormatValue(game.amount - Math.floor(game.amount * game.options.funding / 100)) }}
                             </div>
                         </div>
                         <div v-if="game.options.funding > 0" class="inner-real">
                             <img src="@/assets/img/icons/coin.svg" alt="icon" />
                             <div class="real-value">
-                                <span>{{ battlesFormatValue(game.amount).split('.')[0] }}</span>.{{ battlesFormatValue(game.amount).split('.')[1] }}
+                                {{ battlesFormatValue(game.amount) }}
                             </div>
                         </div>
                     </div>
@@ -124,7 +124,14 @@
                 'battlesSendJoinSocket'
             ]),
             battlesFormatValue(value) {
-                return parseFloat(Math.floor(value / 10) / 100).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                const amount = Number(value) || 0;
+                if (amount >= 1000000) {
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                }
+                if (amount >= 1000) {
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                }
+                return amount.toLocaleString('en-US');
             },
             battlesGetRank(user) {
                 let rank = user.rakeback;
