@@ -21,7 +21,7 @@
                 <div v-else>
                     <div v-for="item in filteredItems" :key="item._id" class="pet-row">
                         <div class="pet-left">
-                            <img :src="localImage(item.image)" v-if="item.image" @error="onImageError" />
+                            <img :src="localImage(item.image)" @error="onImageError" />
                         </div>
                         <div class="pet-center">
                             <div class="pet-name">{{ item.name }}</div>
@@ -30,7 +30,14 @@
                         <div class="pet-right">
                             <div class="count-controls">
                                 <button class="count-btn" @click="decrement(item._id)">-</button>
-                                <div class="count-display">{{ getCount(item._id) }}</div>
+                                <input
+                                    class="count-input"
+                                    type="number"
+                                    min="0"
+                                    :value="getCount(item._id)"
+                                    @change="onCountInput(item._id, $event.target.value)"
+                                    @keydown.enter.prevent="onCountInput(item._id, $event.target.value)"
+                                />
                                 <button class="count-btn" @click="increment(item._id)">+</button>
                             </div>
                             <label class="switch">
@@ -85,22 +92,33 @@ export default {
             this.loading = false;
         },
         localImage(src) {
-            if(!src) return placeholder;
+            const value = (src || '').toString().trim();
+            if (!value) return placeholder;
+            if (/^data:/i.test(value)) return value;
+            if (/^https?:\/\//i.test(value) || value.startsWith('/')) return value;
+            if (/^images?\//i.test(value)) {
+                return value.startsWith('/') ? value : `/${value}`;
+            }
             try {
-                const parts = src.split('/');
+                const parts = value.split('/');
                 const file = parts[parts.length - 1];
-                return 'https://growagarden.roflips.com/' + file;
-            } catch (e) { return src; }
+                if (!file || !/\.(png|jpe?g|webp|svg)$/i.test(file)) {
+                    return placeholder;
+                }
+                return `https://growagarden.roflips.com/${file}`;
+            } catch (e) {
+                return placeholder;
+            }
         },
         onImageError(event) {
-            if (event.target.dataset.fallback === 'true') {
-                event.target.src = placeholder;
+            event.target.src = placeholder;
+        },
+        onCountInput(id, value) {
+            const newCount = Number(value);
+            if (Number.isNaN(newCount) || newCount < 0) {
                 return;
             }
-
-            event.target.dataset.fallback = 'true';
-            const file = event.target.src.split('/').pop().split('?')[0];
-            event.target.src = '/img/items/' + file + '?v=2';
+            this.setCount(id, newCount);
         },
         formatValue(v) {
             const amount = Number(v) || 0;
@@ -197,6 +215,15 @@ export default {
 .count-controls { display:flex; align-items:center; margin-right:8px; }
 .count-btn, .show-all-btn { border:1px solid rgba(68, 145, 181, 0.25); background:#0c3351; color:#d8f4fa; cursor:pointer; font-weight:800; transition: background .2s, border-color .2s, transform .2s; }
 .count-btn { width:36px; height:36px; border-radius:8px; font-size:18px; }
+.count-input { width:60px; height:36px; margin:0 6px; text-align:center; border:1px solid rgba(68, 145, 181, 0.25); border-radius:8px; background:#08273f; color:#d8f4fa; font-weight:800; }
+.count-input::-webkit-outer-spin-button,
+.count-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.count-input[type=number] {
+    -moz-appearance: textfield;
+}
 .count-btn:hover, .show-all-btn:hover { background:#145176; border-color:rgba(85, 215, 177, 0.65); transform:translateY(-1px); }
 .count-display { width:42px; text-align:center; color:#dff8f8; font-weight:800; margin:0 6px; font-size:15px; }
 .show-all-btn { min-width:140px; min-height:38px; padding:0 16px; border-radius:8px; font-family:'Open Sans', sans-serif; font-size:12px; }
