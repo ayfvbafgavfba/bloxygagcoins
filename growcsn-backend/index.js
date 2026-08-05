@@ -33,53 +33,60 @@ const io = socket(server, {
   },
 });
 
-// Load database
-require("./database")();
+const init = async () => {
+  // Load database and wait before using models
+  await require("./database")();
 
-// Init page settings
-require("./utils/setting").settingInitDatabase();
+  // Init page settings after database is connected
+  await require("./utils/setting").settingInitDatabase();
 
-// Enable if you are behind a reverse proxy
-app.set("trust proxy", 1);
+  // Enable if you are behind a reverse proxy
+  app.set("trust proxy", 1);
 
-// Set other middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(hpp());
-app.use(
-  cors({
-    origin: frontendOrigins,
-    credentials: true,
-  })
-);
+  // Set other middleware
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(hpp());
+  app.use(
+    cors({
+      origin: frontendOrigins,
+      credentials: true,
+    })
+  );
 
-// Set view engine
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "/views"));
+  // Set view engine
+  app.set("view engine", "ejs");
+  app.set("views", path.join(__dirname, "/views"));
 
-// Mount routes
-app.use("/", require("./routes")(io));
-app.use("/public", express.static(path.join(__dirname, "public")));
+  // Mount routes
+  app.use("/", require("./routes")(io));
+  app.use("/public", express.static(path.join(__dirname, "public")));
 
-// Serve frontend assets when built
-const frontendBuildPath = path.join(__dirname, "../growcsn-frontend/dist");
-const frontendBuildExists = fs.existsSync(frontendBuildPath);
-console.log(`Frontend build path: ${frontendBuildPath} exists=${frontendBuildExists}`);
-if (frontendBuildExists) {
-  // Serve built frontend with long cache headers for static assets
-  app.use(express.static(frontendBuildPath, { maxAge: "30d" }));
+  // Serve frontend assets when built
+  const frontendBuildPath = path.join(__dirname, "../growcsn-frontend/dist");
+  const frontendBuildExists = fs.existsSync(frontendBuildPath);
+  console.log(`Frontend build path: ${frontendBuildPath} exists=${frontendBuildExists}`);
+  if (frontendBuildExists) {
+    // Serve built frontend with long cache headers for static assets
+    app.use(express.static(frontendBuildPath, { maxAge: "30d" }));
 
-  app.get("/*", (req, res) => {
-    res.sendFile(path.join(frontendBuildPath, "index.html"));
-  });
-}
+    app.get("/*", (req, res) => {
+      res.sendFile(path.join(frontendBuildPath, "index.html"));
+    });
+  }
 
-// Mount sockets
-require("./sockets")(io);
+  // Mount sockets
+  require("./sockets")(io);
 
-// Set app port
-const PORT = process.env.SERVER_PORT || process.env.PORT || 5001;
+  // Set app port
+  const PORT = process.env.SERVER_PORT || process.env.PORT || 5001;
 
-server.listen(PORT, () =>
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-);
+  server.listen(PORT, () =>
+    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+  );
+};
+
+init().catch((err) => {
+  console.error(`Startup error: ${err.message}`);
+  process.exit(1);
+});

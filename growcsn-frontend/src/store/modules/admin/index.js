@@ -762,7 +762,37 @@ const actions = {
         });
     },
     adminSendBoxCreateSocket({ getters, commit, dispatch }, data) {
-        if(getters.socketAdmin === null || getters.socketSendLoading !== null) { return; }
+        if(getters.socketAdmin === null) {
+            dispatch('notificationShow', { type: 'error', message: 'Admin socket is not available. Please refresh the page and sign in again.' });
+            return;
+        }
+
+        if(getters.socketSendLoading !== null) {
+            dispatch('notificationShow', { type: 'error', message: 'Another request is already in progress. Please wait.' });
+            return;
+        }
+
+        if(getters.socketAdmin.connected !== true) {
+            if(getters.socketAdmin.__pendingAdminBoxCreate === true) {
+                dispatch('notificationShow', { type: 'error', message: 'A box create request is already waiting for admin socket connection.' });
+                return;
+            }
+
+            getters.socketAdmin.__pendingAdminBoxCreate = true;
+            getters.socketAdmin.once('connect', () => {
+                getters.socketAdmin.__pendingAdminBoxCreate = false;
+                dispatch('adminSendBoxCreateSocket', data);
+            });
+            getters.socketAdmin.once('connect_error', () => {
+                getters.socketAdmin.__pendingAdminBoxCreate = false;
+                dispatch('notificationShow', { type: 'error', message: 'Admin socket connection failed. Please refresh the page and try again.' });
+            });
+
+            dispatch('socketConnectAdmin');
+            dispatch('notificationShow', { type: 'info', message: 'Admin socket is reconnecting. Your create box request will be sent once connected.' });
+            return;
+        }
+
         commit('socket_set_send_loading', 'AdminBoxCreate');
 
         getters.socketAdmin.emit('sendBoxCreate', data, (res) => {

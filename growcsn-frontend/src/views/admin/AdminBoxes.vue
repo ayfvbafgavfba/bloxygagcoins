@@ -84,15 +84,24 @@
                 adminName: null,
                 adminImage: null,
                 adminCategories: null,
-                adminItems: [] 
-            }
+                adminItems: []
+            };
+        },
+        computed: {
+            ...mapGetters([
+                'adminBoxList',
+                'adminFilterSearch',
+                'authUser',
+                'socketAdmin'
+            ])
         },
         methods: {
             ...mapActions([
                 'notificationShow',
+                'socketConnectAdmin',
                 'adminSetFilterSearch',
-                'adminSetBoxListPage', 
-                'adminGetBoxListSocket', 
+                'adminSetBoxListPage',
+                'adminGetBoxListSocket',
                 'adminSendBoxCreateSocket'
             ]),
             adminFormatValue(value) {
@@ -103,7 +112,7 @@
 
                 reader.onload = (event) => {
                     this.adminImage = event.target.result;
-                }
+                };
 
                 reader.readAsDataURL(image);
             },
@@ -191,27 +200,24 @@
                 }
 
                 const data = { name: this.adminName, image: this.adminImage, categories: categories, items: items };
-                console.log(data);
                 this.adminSendBoxCreateSocket(data);
             }
-        },
-        computed: {
-            ...mapGetters([
-                'adminBoxList', 
-                'adminFilterSearch'
-            ])
         },
         created() {
             if(this.adminBoxList.loading === false) {
                 const data = { page: this.adminBoxList.page, search: this.adminFilterSearch };
                 this.adminGetBoxListSocket(data);
             }
+
+            if(this.authUser && this.authUser.user && this.authUser.user.rank === 'admin' && this.socketAdmin && this.socketAdmin.connected !== true) {
+                this.socketConnectAdmin();
+            }
         },
         beforeRouteLeave(to, from, next) {
             this.adminSetFilterSearch('');
             next();
         }
-    }
+    };
 </script>
 
 <style scoped>

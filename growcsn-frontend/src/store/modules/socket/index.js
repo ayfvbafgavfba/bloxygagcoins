@@ -269,7 +269,7 @@ const actions = {
         getters.socketCashier.on('cryptoTransaction', (data) => { dispatch('cashierSocketCryptoTransaction', data); });
     },
     socketConnectAdmin({ getters, dispatch }) {
-        if(getters.socketAdmin.connected === true) { getters.socketAdmin.removeAllListeners(); }
+        getters.socketAdmin.removeAllListeners();
         if(getters.authToken !== null) { getters.socketAdmin.auth.token = getters.authToken; }
 
         getters.socketAdmin.disconnect().connect();
@@ -281,7 +281,12 @@ const actions = {
         getters.socketAdmin.disconnect();
     },
     socketListenAdmin({ getters, dispatch }) {
-
+        getters.socketAdmin.on('connect_error', (err) => {
+            dispatch('notificationShow', {
+                type: 'error',
+                message: err && err.message ? `Admin socket connection failed: ${err.message}` : 'Admin socket connection failed.'
+            });
+        });
     }
 }
 

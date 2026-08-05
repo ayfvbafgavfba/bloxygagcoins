@@ -4,11 +4,11 @@ const Setting = require('../database/models/Setting');
 // Setting variables
 let settings = null;
 
-const settingInitDatabase = async() => {
+const settingInitDatabase = async () => {
     try {
         settings = await Setting.findOne({}).select('general chat games robux limited steam crypto gift credit').lean();
 
-        if(settings === undefined || settings === null) {
+        if (settings === undefined || settings === null) {
             settings = await Setting.create({
                 general: {
                     'maintenance.enabled': false,
@@ -45,12 +45,12 @@ const settingInitDatabase = async() => {
                     'deposit.enabled': false,
                     'withdraw.enabled': false
                 },
-                    limited: {
-                        'deposit.enabled': false,
-                        'withdraw.enabled': false,
-                        'allowedPets': [],
-                        'allowedPetCounts': {}
-                    },
+                limited: {
+                    'deposit.enabled': false,
+                    'withdraw.enabled': false,
+                    'allowedPets': [],
+                    'allowedPetCounts': {}
+                },
                 steam: {
                     'deposit.enabled': false,
                     'withdraw.enabled': false
@@ -72,16 +72,17 @@ const settingInitDatabase = async() => {
         }
 
         delete settings._id;
-    } catch(err) {
+        return settings;
+    } catch (err) {
         console.error(`Error: ${err.message}`);
         process.exit(1);
     }
 }
 
 const settingCheck = (user, value) => {
-    if(settings.general.maintenance.enabled === true && (user === null || user.rank !== 'admin')) {
+    if (settings.general.maintenance.enabled === true && (user === null || user.rank !== 'admin')) {
         throw new Error('Site is in maintenance! Please try again later.');
-    } else if(value !== undefined && value.split('.').reduce((o, i) => o[i], settings) === false && (user === null || user.rank !== 'admin')) {
+    } else if (value !== undefined && value.split('.').reduce((o, i) => o[i], settings) === false && (user === null || user.rank !== 'admin')) {
         throw new Error('The action you’ve requested is currently unavailable.');
     }
 }
