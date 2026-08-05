@@ -778,13 +778,27 @@ const actions = {
                 return;
             }
 
-            getters.socketAdmin.__pendingAdminBoxCreate = true;
-            getters.socketAdmin.once('connect', () => {
-                getters.socketAdmin.__pendingAdminBoxCreate = false;
+            const socket = getters.socketAdmin;
+            socket.__pendingAdminBoxCreate = true;
+
+            // Add a timeout to avoid leaving the UI stuck if reconnect never happens
+            if(socket.__pendingAdminBoxCreateTimeout) { clearTimeout(socket.__pendingAdminBoxCreateTimeout); }
+            socket.__pendingAdminBoxCreateTimeout = setTimeout(() => {
+                if(socket.__pendingAdminBoxCreate) {
+                    socket.__pendingAdminBoxCreate = false;
+                    dispatch('notificationShow', { type: 'error', message: 'Admin socket reconnect timed out. Please try again.' });
+                }
+            }, 20000);
+
+            socket.once('connect', () => {
+                if(socket.__pendingAdminBoxCreateTimeout) { clearTimeout(socket.__pendingAdminBoxCreateTimeout); socket.__pendingAdminBoxCreateTimeout = null; }
+                socket.__pendingAdminBoxCreate = false;
                 dispatch('adminSendBoxCreateSocket', data);
             });
-            getters.socketAdmin.once('connect_error', () => {
-                getters.socketAdmin.__pendingAdminBoxCreate = false;
+
+            socket.once('connect_error', () => {
+                if(socket.__pendingAdminBoxCreateTimeout) { clearTimeout(socket.__pendingAdminBoxCreateTimeout); socket.__pendingAdminBoxCreateTimeout = null; }
+                socket.__pendingAdminBoxCreate = false;
                 dispatch('notificationShow', { type: 'error', message: 'Admin socket connection failed. Please refresh the page and try again.' });
             });
 
