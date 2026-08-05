@@ -294,8 +294,6 @@ const actions = {
         });
 
         getters.socketAdmin.on('disconnect', (reason) => {
-            // Reset any pending request flags on disconnect to avoid stuck UI state
-            if(getters.socketAdmin.__pendingAdminBoxCreate === true) { getters.socketAdmin.__pendingAdminBoxCreate = false; }
             dispatch('socketSetSendLoading', null);
         });
 

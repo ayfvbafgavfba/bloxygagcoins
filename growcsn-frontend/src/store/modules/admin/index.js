@@ -790,8 +790,6 @@ const actions = {
                 }
             }, 20000);
 
-            dispatch('socketConnectAdmin');
-
             socket.once('connect', () => {
                 if(socket.__pendingAdminBoxCreateTimeout) { clearTimeout(socket.__pendingAdminBoxCreateTimeout); socket.__pendingAdminBoxCreateTimeout = null; }
                 socket.__pendingAdminBoxCreate = false;
@@ -805,6 +803,7 @@ const actions = {
                 });
             });
 
+            dispatch('socketConnectAdmin');
             dispatch('notificationShow', { type: 'info', message: 'Admin socket is reconnecting. Your create box request will be sent once connected.' });
             return;
         }
