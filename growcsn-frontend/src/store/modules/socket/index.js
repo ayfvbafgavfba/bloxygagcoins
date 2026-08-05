@@ -269,18 +269,24 @@ const actions = {
         getters.socketCashier.on('cryptoTransaction', (data) => { dispatch('cashierSocketCryptoTransaction', data); });
     },
     socketConnectAdmin({ getters, dispatch }) {
-        getters.socketAdmin.removeAllListeners();
         if(getters.authToken !== null) { getters.socketAdmin.auth.token = getters.authToken; }
 
-        getters.socketAdmin.disconnect().connect();
+        if(getters.socketAdmin.__adminListenersAttached !== true) {
+            dispatch('socketListenAdmin');
+        }
 
-        dispatch('socketListenAdmin');
+        getters.socketAdmin.disconnect().connect();
     },
     socketDisconnectAdmin({ getters }) {
         getters.socketAdmin.removeAllListeners();
+        getters.socketAdmin.__adminListenersAttached = false;
         getters.socketAdmin.disconnect();
     },
     socketListenAdmin({ getters, dispatch }) {
+        if(getters.socketAdmin.__adminListenersAttached === true) {
+            return;
+        }
+
         getters.socketAdmin.on('connect', () => {
             // Clear any pending send states when admin socket connects
             if(getters.socketAdmin.__pendingAdminBoxCreate === true) { getters.socketAdmin.__pendingAdminBoxCreate = false; }
@@ -299,6 +305,8 @@ const actions = {
                 message: err && err.message ? `Admin socket connection failed: ${err.message}` : 'Admin socket connection failed.'
             });
         });
+
+        getters.socketAdmin.__adminListenersAttached = true;
     }
 }
 

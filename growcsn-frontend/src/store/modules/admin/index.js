@@ -790,19 +790,21 @@ const actions = {
                 }
             }, 20000);
 
+            dispatch('socketConnectAdmin');
+
             socket.once('connect', () => {
                 if(socket.__pendingAdminBoxCreateTimeout) { clearTimeout(socket.__pendingAdminBoxCreateTimeout); socket.__pendingAdminBoxCreateTimeout = null; }
                 socket.__pendingAdminBoxCreate = false;
                 dispatch('adminSendBoxCreateSocket', data);
             });
 
-            socket.once('connect_error', () => {
-                if(socket.__pendingAdminBoxCreateTimeout) { clearTimeout(socket.__pendingAdminBoxCreateTimeout); socket.__pendingAdminBoxCreateTimeout = null; }
-                socket.__pendingAdminBoxCreate = false;
-                dispatch('notificationShow', { type: 'error', message: 'Admin socket connection failed. Please refresh the page and try again.' });
+            socket.once('connect_error', (err) => {
+                dispatch('notificationShow', {
+                    type: 'error',
+                    message: err && err.message ? `Admin socket connection failed: ${err.message}. Retrying...` : 'Admin socket connection failed. Retrying...'
+                });
             });
 
-            dispatch('socketConnectAdmin');
             dispatch('notificationShow', { type: 'info', message: 'Admin socket is reconnecting. Your create box request will be sent once connected.' });
             return;
         }
