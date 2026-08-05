@@ -127,7 +127,11 @@
             },
             adminChangeImage(e) {
                 const image = e.target.files[0];
-                this.adminFormatImage(image);
+                if(image) {
+                    this.adminFormatImage(image);
+                } else {
+                    this.adminImage = null;
+                }
             },
             adminRemoveButton(item) {
                 const index = this.adminItems.findIndex((element) => element.item._id === item.item._id);
@@ -199,7 +203,10 @@
                     return;
                 }
 
-                const data = { name: this.adminName, image: this.adminImage, categories: categories, items: items };
+                const data = { name: this.adminName, categories: categories, items: items };
+                if(this.adminImage !== undefined && this.adminImage !== null && String(this.adminImage).trim() !== '') {
+                    data.image = this.adminImage;
+                }
                 this.adminSendBoxCreateSocket(data);
             }
         },
