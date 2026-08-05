@@ -51,7 +51,7 @@ const adminCheckSendBoxCreateData = (data) => {
         throw new Error('Something went wrong. Please try again in a few seconds.');
     } else if(data.name === undefined || data.name === null || typeof data.name !== 'string' || data.name.trim() === '') {
         throw new Error('Your entered name is invalid.');
-    } else if(data.image === undefined || data.image === null || typeof data.image !== 'string') {
+    } else if(data.image !== undefined && data.image !== null && typeof data.image !== 'string') {
         throw new Error('Your entered image is invalid.');
     } else if(data.categories === undefined || data.categories === null || Array.isArray(data.categories) !== true || data.categories.some((element) => ['featured', 'low risk', '50/50', 'high risk', 'partners'].includes(element) !== true) === true) {
         throw new Error('Your entered categories are invalid.');

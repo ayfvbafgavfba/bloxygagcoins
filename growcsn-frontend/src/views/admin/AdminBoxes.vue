@@ -190,11 +190,6 @@
                     return;
                 }
 
-                if(this.adminImage === null || this.adminImage.trim() === '') {
-                    this.notificationShow({ type: 'error', message: 'Your entered image is invalid.' });
-                    return;
-                }
-
                 const data = { name: this.adminName, image: this.adminImage, categories: categories, items: items };
                 console.log(data);
                 this.adminSendBoxCreateSocket(data);

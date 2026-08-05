@@ -83,8 +83,10 @@ const adminSendBoxCreateSocket = async(io, socket, user, data, callback) => {
         // Get name slug
         const slug = slugify(data.name, { lower: true });
 
-        // Save box image
-        await adminSaveImage(data.image, slug);
+        // Save box image if provided
+        if(data.image !== undefined && data.image !== null && typeof data.image === 'string' && data.image.trim() !== '') {
+            await adminSaveImage(data.image, slug);
+        }
 
         // Create box in database
         let boxDatabase = await Box.create({
