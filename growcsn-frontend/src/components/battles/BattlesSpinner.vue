@@ -16,6 +16,12 @@
                         </div>
                         <div class="line-pointer"></div>
                     </div>
+                    <div v-if="['rolling', 'completed'].includes(battlesGameData.game.state)" class="jackpot-reels">
+                        <div v-for="(bet, index) in battlesGetJackpotBets" :key="'reel-' + index" v-if="bet !== null" class="jackpot-reel">
+                            <div class="reel-label">{{ bet.bot === true ? 'BOT' : bet.user.username }}</div>
+                            <BattlesReel :reel="battlesReels[index + 1]" :pos="battlesReelsPos" :running="battlesRunning" />
+                        </div>
+                    </div>
                     <div class="line-center-label">
                         <div class="center-title">JACKPOT</div>
                         <div class="center-subtitle">{{ battlesGetWheelLabel }}</div>
@@ -31,8 +37,10 @@
                             <div v-else class="legend-avatar-placeholder">{{ bet === null ? '+' : 'BOT' }}</div>
                         </div>
                         <div class="legend-text">
-                            <span class="legend-name">{{ bet !== null ? (bet.bot === true ? 'BOT' : bet.user.username) : 'OPEN SLOT' }}</span>
-                            <span class="legend-chance">{{ bet !== null ? battlesGetChance(bet) : '---' }}</span>
+                            <div class="legend-name-row">
+                                <span class="legend-name">{{ bet !== null ? (bet.bot === true ? 'BOT' : bet.user.username) : 'OPEN SLOT' }}</span>
+                                <span class="legend-chance">{{ bet !== null ? battlesGetChance(bet) : '---' }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -230,9 +238,48 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 const data = { boxes: boxes, playerCount: this.battlesGameData.game.playerCount, mode: this.battlesGameData.game.mode, levelMin: this.battlesGameData.game.options.levelMin, funding: this.battlesGameData.game.options.funding, private: this.battlesGameData.game.options.private, affiliateOnly: this.battlesGameData.game.options.affiliateOnly, cursed: this.battlesGameData.game.options.cursed, terminal: this.battlesGameData.game.options.terminal, jackpot: this.battlesGameData.game.options.jackpot };
                 this.battlesSendCreateSocket(data);
             },
+            battlesGetBetAmount(bet) {
+                if(!bet) { return 0; }
+
+                const amount = Number(bet.amount);
+                if(amount > 0) { return amount; }
+
+                return this.battlesGetBetOutcomeAmount(bet);
+            },
+            battlesGetBetOutcomeAmount(bet) {
+                if(!bet || !Array.isArray(bet.outcomes) || this.battlesGetBoxes.length === 0) { return 0; }
+
+                let total = 0;
+                for(const [index, outcome] of bet.outcomes.entries()) {
+                    const box = this.battlesGetBoxes[index];
+                    if(!box || !Array.isArray(box.items)) { continue; }
+
+                    let pos = 0;
+                    for(const item of this.battlesGetItemsFormated(box.items)) {
+                        pos += item.tickets;
+                        if(outcome <= pos) {
+                            total += (item.item && item.item.amountFixed ? Number(item.item.amountFixed) : 0);
+                            break;
+                        }
+                    }
+                }
+
+                return total;
+            },
+            battlesGetBetWeight(bet) {
+                if(!bet) { return 0; }
+
+                const rawAmount = Number(bet.amount) || 0;
+                if(this.battlesGameData.game && this.battlesGameData.game.options.jackpot === true && Array.isArray(bet.outcomes) && bet.outcomes.length > 0) {
+                    const outcomeAmount = this.battlesGetBetOutcomeAmount(bet);
+                    return outcomeAmount > 0 ? outcomeAmount : rawAmount;
+                }
+
+                return rawAmount;
+            },
             battlesGetChance(bet) {
                 const total = this.battlesGetJackpotTotal;
-                const amount = bet ? Number(bet.amount) : 0;
+                const amount = bet ? this.battlesGetBetWeight(bet) : 0;
                 if(total <= 0 || amount <= 0) { return '0%'; }
                 const value = (amount / total) * 100;
                 return value < 1 ? `${value.toFixed(1)}%` : `${Math.round(value)}%`;
@@ -245,8 +292,10 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 };
             },
             battlesGetLineSlotStyle(index) {
-                const total = this.battlesGetJackpotBets.length;
-                const offset = total > 1 ? (index / (total - 1)) * 100 : 50;
+                const slice = this.battlesGetWheelSlices.find((slice) => slice.slot === index);
+                const fallbackTotal = this.battlesGetJackpotBets.length;
+                const fallbackOffset = fallbackTotal > 1 ? (index / (fallbackTotal - 1)) * 100 : 50;
+                const offset = slice ? slice.midPercent : fallbackOffset;
                 return {
                     left: `${Math.min(Math.max(offset, 4), 96)}%`,
                     transform: 'translateX(-50%)'
@@ -315,15 +364,15 @@ import BattlesReel from '@/components/battles/BattlesReel';
             },
             battlesGetJackpotTotal() {
                 return this.battlesGetJackpotBets.reduce((total, bet) => {
-                    return total + (bet && bet.amount ? Number(bet.amount) : 0);
+                    return total + (bet ? this.battlesGetBetWeight(bet) : 0);
                 }, 0);
             },
             battlesGetWheelSlices() {
                 const total = this.battlesGetJackpotTotal;
-                const bets = this.battlesGetJackpotBets.filter((bet) => bet !== null && Number(bet.amount) > 0);
+                const bets = this.battlesGetJackpotBets.filter((bet) => bet !== null && this.battlesGetBetWeight(bet) > 0);
                 let current = 0;
                 return bets.map((bet, index) => {
-                    const amount = Number(bet.amount) || 0;
+                    const amount = this.battlesGetBetWeight(bet);
                     const percent = total > 0 ? amount / total : 0;
                     const start = current;
                     const end = current + percent;
@@ -574,11 +623,39 @@ import BattlesReel from '@/components/battles/BattlesReel';
     .battles-spinner .line-segment {
         position: absolute;
         left: 0;
-        right: 0;
         top: 50%;
         transform: translateY(-50%);
         height: 24px;
         border-radius: 999px;
+    }
+
+    .battles-spinner .jackpot-reels {
+        width: 100%;
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        margin-top: 16px;
+    }
+
+    .battles-spinner .jackpot-reel {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .battles-spinner .jackpot-reel .reel-label {
+        font-size: 11px;
+        color: #8ca6c7;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        width: 100%;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .battles-spinner .jackpot-line .line-empty {
@@ -794,6 +871,13 @@ import BattlesReel from '@/components/battles/BattlesReel';
         min-width: 0;
     }
 
+    .battles-spinner .legend-name-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+
     .battles-spinner .legend-name {
         font-size: 13px;
         font-weight: 800;
@@ -804,9 +888,9 @@ import BattlesReel from '@/components/battles/BattlesReel';
     }
 
     .battles-spinner .legend-chance {
-        margin-top: 2px;
         font-size: 11px;
         color: #8ca6c7;
+        white-space: nowrap;
     }
 
     .battles-spinner .legend-item.legend-team-a .legend-avatar,
