@@ -10,7 +10,7 @@
                         <span>{{ battlesGetMode }}</span>
                     </div>
                 </div>
-                <div v-if="game.options.cursed === true || game.options.terminal === true" class="info-option">
+                <div v-if="game.options.cursed === true || game.options.terminal === true || game.options.jackpot === true" class="info-option">
                     <div class="option-inner">
                         <IconCursedGradient v-if="game.options.cursed === true" />
                         <IconTerminalGradient v-if="game.options.terminal === true" />
@@ -179,8 +179,9 @@
             battlesGetOption() {
                 let option = '';
 
-                if(this.game.options.cursed === true && this.game.options.terminal === false) { option = 'CURSED'; }
-                else if(this.game.options.cursed === false && this.game.options.terminal === true) { option = 'TERMINAL'; }
+                if(this.game.options.cursed === true && this.game.options.terminal === false && this.game.options.jackpot === false) { option = 'CURSED'; }
+                else if(this.game.options.cursed === false && this.game.options.terminal === true && this.game.options.jackpot === false) { option = 'TERMINAL'; }
+                else if(this.game.options.jackpot === true) { option = 'JACKPOT'; }
 
                 return option;
             },

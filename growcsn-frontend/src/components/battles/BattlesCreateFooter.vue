@@ -23,7 +23,11 @@
             </div>
             <div class="right-jackpot" v-bind:class="{ 'jackpot-active': battlesFilterJackpot === true }">
                 <span>JACKPOT MODE</span>
-                <button v-on:click="battlesJackpotToggle(!battlesFilterJackpot)"></button>
+                <button class="jackpot-toggle" v-on:click="battlesJackpotToggle(!battlesFilterJackpot)">
+                    <span class="toggle-track">
+                        <span class="toggle-thumb"></span>
+                    </span>
+                </button>
             </div>
         </div>
     </div>

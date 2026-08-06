@@ -1,6 +1,30 @@
 <template>
     <div ref="battles-spinner" class="battles-spinner">
         <div class="spinner-inner">
+            <div v-if="battlesGameData.game !== null && battlesGameData.game.options.jackpot === true" class="jackpot-wheel-panel">
+                <div class="jackpot-wheel-status">{{ battlesGetWheelStatus }}</div>
+                <div class="jackpot-wheel-container">
+                    <div class="jackpot-wheel" v-bind:class="{ 'wheel-running': battlesGameData.game.state === 'rolling' }" v-bind:style="battlesGetWheelStyle">
+                        <div class="wheel-center">
+                            <div class="center-title">JACKPOT</div>
+                            <div class="center-subtitle">{{ battlesGetWheelLabel }}</div>
+                        </div>
+                    </div>
+                    <div class="wheel-pointer"></div>
+                </div>
+                <div class="jackpot-wheel-legend">
+                    <div v-for="(bet, index) in battlesGetJackpotBets" :key="index" class="legend-item" :class="{ 'legend-empty': bet === null, 'legend-team-a': battlesGetTeamLabel(index) === 'A', 'legend-team-b': battlesGetTeamLabel(index) === 'B' }">
+                        <div class="legend-avatar">
+                            <AvatarImage v-if="bet !== null && bet.bot !== true" :image="bet.user.avatar" />
+                            <div v-else class="legend-avatar-placeholder">{{ bet === null ? '+' : 'BOT' }}</div>
+                        </div>
+                        <div class="legend-text">
+                            <span class="legend-name">{{ bet !== null ? (bet.bot === true ? 'BOT' : bet.user.username) : 'OPEN SLOT' }}</span>
+                            <span class="legend-chance">{{ bet !== null ? battlesGetChance(bet) : '---' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div v-if="battlesGameData.game.state === 'pending'" class="inner-waiting">
                 <div class="waiting-info">
                     <div class="info-inner">
@@ -10,7 +34,7 @@
                 </div>
             </div>
 
-            <div v-for="(bet, index) in battlesGetBets" v-bind:key="index" class="inner-element">
+            <div v-if="battlesGameData.game === null || battlesGameData.game.options.jackpot !== true" v-for="(bet, index) in battlesGetBets" v-bind:key="index" class="inner-element">
                 <transition name="fade" mode="out-in">
                     <div v-if="['created', 'countdown'].includes(battlesGameData.game.state) === true && bet === null" class="element-waiting">
                         <svg width="25" height="27" viewBox="0 0 25 27" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -85,10 +109,11 @@
 
 <script>
     import { mapGetters, mapActions } from 'vuex';
-    import IconVersusGradient from '@/components/icons/IconVersusGradient';
-    import IconGroupGradient from '@/components/icons/IconGroupGradient';
-    import ButtonLoading from '@/components/ButtonLoading';
-    import BattlesReel from '@/components/battles/BattlesReel';
+import AvatarImage from '@/components/AvatarImage';
+import IconVersusGradient from '@/components/icons/IconVersusGradient';
+import IconGroupGradient from '@/components/icons/IconGroupGradient';
+import ButtonLoading from '@/components/ButtonLoading';
+import BattlesReel from '@/components/battles/BattlesReel';
 
     export default {
         name: 'BattlesSpinner',
@@ -189,8 +214,23 @@
             battlesCreateButton() {
                 const boxes = this.battlesGameData.game.boxes.map((element) => ({ _id: element.box._id, count: element.count }));
 
-                const data = { boxes: boxes, playerCount: this.battlesGameData.game.playerCount, mode: this.battlesGameData.game.mode, levelMin: this.battlesGameData.game.options.levelMin, funding: this.battlesGameData.game.options.funding, private: this.battlesGameData.game.options.private, affiliateOnly: this.battlesGameData.game.options.affiliateOnly, cursed: this.battlesGameData.game.options.cursed, terminal: this.battlesGameData.game.options.terminal };
+                const data = { boxes: boxes, playerCount: this.battlesGameData.game.playerCount, mode: this.battlesGameData.game.mode, levelMin: this.battlesGameData.game.options.levelMin, funding: this.battlesGameData.game.options.funding, private: this.battlesGameData.game.options.private, affiliateOnly: this.battlesGameData.game.options.affiliateOnly, cursed: this.battlesGameData.game.options.cursed, terminal: this.battlesGameData.game.options.terminal, jackpot: this.battlesGameData.game.options.jackpot };
                 this.battlesSendCreateSocket(data);
+            },
+            battlesGetChance(bet) {
+                const total = this.battlesGetJackpotTotal;
+                const amount = bet ? Number(bet.amount) : 0;
+                if(total <= 0 || amount <= 0) { return '0%'; }
+                const value = (amount / total) * 100;
+                return value < 1 ? `${value.toFixed(1)}%` : `${Math.round(value)}%`;
+            },
+            battlesGetJackpotColor(index) {
+                const palette = ['#f2b03f', '#ff8e26', '#00ffc2', '#00aa6d'];
+                return palette[index % palette.length];
+            },
+            battlesGetTeamLabel(index) {
+                if(this.battlesGameData.game === null || this.battlesGameData.game.mode !== 'team') { return ''; }
+                return index < 2 ? 'A' : 'B';
             }
         },
         computed: {
@@ -206,6 +246,10 @@
                 'battlesGameData'
             ]),
             battlesGetBets() {
+                if(this.battlesGameData.game === null || !Array.isArray(this.battlesGameData.game.bets)) {
+                    return [];
+                }
+
                 let bets = [];
 
                 for(let bet = 0; bet < this.battlesGameData.game.playerCount; bet++) {
@@ -215,6 +259,75 @@
                 }
 
                 return bets;
+            },
+            battlesGetJackpotBets() {
+                if(this.battlesGameData.game === null || !Array.isArray(this.battlesGameData.game.bets)) {
+                    return [];
+                }
+
+                let bets = [];
+                for(let slot = 0; slot < this.battlesGameData.game.playerCount; slot++) {
+                    const index = this.battlesGameData.game.bets.findIndex((element) => element.slot === slot);
+                    bets.push(index !== -1 ? this.battlesGameData.game.bets[index] : null);
+                }
+
+                return bets;
+            },
+            battlesGetJackpotTotal() {
+                return this.battlesGetJackpotBets.reduce((total, bet) => {
+                    return total + (bet && bet.amount ? Number(bet.amount) : 0);
+                }, 0);
+            },
+            battlesGetWheelStyle() {
+                const bets = this.battlesGetJackpotBets.filter((bet) => bet !== null && Number(bet.amount) > 0);
+                const total = this.battlesGetJackpotTotal;
+
+                if(total <= 0 || bets.length === 0) {
+                    return {
+                        transform: 'rotate(0deg)',
+                        transition: 'transform 0.6s ease-out'
+                    };
+                }
+
+                let start = 0;
+                const segments = bets.map((bet, index) => {
+                    const amount = Number(bet.amount) || 0;
+                    const percent = amount / total;
+                    const end = start + percent * 100;
+                    const segment = `${this.battlesGetJackpotColor(index)} ${start}% ${end}%`;
+                    start = end;
+                    return segment;
+                }).join(', ');
+
+                const winnerIndex = this.battlesGetJackpotBets.findIndex((bet) => bet !== null && bet.payout > 0);
+                let rotate = 0;
+                if(winnerIndex >= 0 && this.battlesGameData.game.state === 'completed') {
+                    const beforeTotal = this.battlesGetJackpotBets.slice(0, winnerIndex).reduce((sum, bet) => {
+                        return sum + (bet && bet.amount ? Number(bet.amount) : 0);
+                    }, 0);
+                    const winnerAmount = Number(this.battlesGetJackpotBets[winnerIndex].amount) || 0;
+                    const middle = beforeTotal + winnerAmount / 2;
+                    rotate = -((middle / total) * 360) + 90;
+                }
+
+                return {
+                    background: `conic-gradient(from 90deg, ${segments})`,
+                    transform: `rotate(${rotate}deg)`,
+                    transition: this.battlesGameData.game.state === 'rolling' ? 'none' : 'transform 1.4s cubic-bezier(0.22, 1, 0.36, 1)'
+                };
+            },
+            battlesGetWheelStatus() {
+                if(this.battlesGameData.game === null) { return 'JACKPOT'; }
+                if(this.battlesGameData.game.state === 'rolling') { return 'SPINNING...'; }
+                if(this.battlesGameData.game.state === 'pending') { return 'AWAITING DRAW'; }
+                if(['created', 'countdown'].includes(this.battlesGameData.game.state)) { return 'READY TO ROLL'; }
+                if(this.battlesGameData.game.state === 'completed') { return 'RESULT'; }
+                return 'JACKPOT';
+            },
+            battlesGetWheelLabel() {
+                const players = this.battlesGetJackpotBets.filter((bet) => bet !== null).length;
+                const total = this.battlesGetJackpotTotal;
+                return `${players} player${players === 1 ? '' : 's'}${total > 0 ? ` • ${this.battlesFormatValue(total)}` : ''}`;
             },
             battlesGetBoxes() {
                 let boxes = [];
@@ -232,15 +345,25 @@
             'battlesGameData': {
                 deep: true,
                 handler(data, dataOld) {
-                    if(this.battlesGameData.game.state === 'rolling') {
+                    if(this.battlesGameData.game === null || typeof this.battlesGameData.game.state !== 'string') {
+                        return;
+                    }
+
+                    if(this.battlesGameData.game.state === 'rolling' && Array.isArray(this.battlesGameData.game.bets)) {
                         this.battlesAddReels();
                         this.battlesGetReelsPos();
                         this.battlesRunning = true;
 
                         for(const [index, bet] of this.battlesGameData.game.bets.entries()) {
+                            if(!bet || !bet.outcomes || !Array.isArray(bet.outcomes)) {
+                                continue;
+                            }
+
                             this.battlesReelStyle = { transform: 'translateX(0px) translateY(-2416.5px)', transition: 'none' };
 
-                            this.battlesReels[index + 1][60] = this.battlesGetOutcomeItem(bet.outcomes[bet.outcomes.length - 1], this.battlesGetBoxes[bet.outcomes.length - 1].items);
+                            const outcomeIndex = bet.outcomes.length - 1;
+                            const outcomeItems = this.battlesGetBoxes[outcomeIndex] ? this.battlesGetBoxes[outcomeIndex].items : [];
+                            this.battlesReels[index + 1][60] = this.battlesGetOutcomeItem(bet.outcomes[outcomeIndex], outcomeItems);
 
                             setTimeout(() => {
                                 const timeEnding = new Date(this.battlesGameData.game.updatedAt).getTime() + 5000;
@@ -342,6 +465,175 @@
         right: 0;
         background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(2, 21, 36, 0.08) 8px, rgba(2, 21, 36, 0.08) 14px);
         z-index: -1;
+    }
+
+    .battles-spinner .jackpot-wheel-panel {
+        width: 100%;
+        padding: 22px 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        position: relative;
+    }
+
+    .battles-spinner .jackpot-wheel-status {
+        font-size: 11px;
+        letter-spacing: 1.8px;
+        text-transform: uppercase;
+        font-weight: 800;
+        color: #f2b03f;
+    }
+
+    .battles-spinner .jackpot-wheel-container {
+        width: 230px;
+        height: 230px;
+        position: relative;
+    }
+
+    .battles-spinner .jackpot-wheel {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 1px solid rgba(242, 176, 63, 0.18);
+        overflow: hidden;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 0 18px rgba(0, 0, 0, 0.2);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.35) 65%);
+    }
+
+    .battles-spinner .jackpot-wheel.wheel-running {
+        animation: jackpot-wheel-spin 2.8s linear infinite;
+    }
+
+    .battles-spinner .jackpot-wheel:before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle, transparent 45%, rgba(0,0,0,0.45) 100%);
+        pointer-events: none;
+    }
+
+    .battles-spinner .wheel-center {
+        width: 108px;
+        height: 108px;
+        border-radius: 50%;
+        background: rgba(2, 21, 36, 0.96);
+        border: 1px solid rgba(242, 176, 63, 0.18);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        text-align: center;
+        box-shadow: 0 0 0 2px rgba(2, 21, 36, 0.6);
+    }
+
+    .battles-spinner .center-title {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        color: #f2b03f;
+    }
+
+    .battles-spinner .center-subtitle {
+        margin-top: 4px;
+        font-size: 11px;
+        color: #92b0d6;
+        line-height: 1.3;
+    }
+
+    .battles-spinner .wheel-pointer {
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        border-bottom: 18px solid #f2b03f;
+        z-index: 2;
+        filter: drop-shadow(0 0 12px rgba(242, 176, 63, 0.4));
+    }
+
+    .battles-spinner .jackpot-wheel-legend {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .battles-spinner .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 16px;
+        background: rgba(6, 21, 37, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .battles-spinner .legend-item.legend-empty {
+        opacity: 0.5;
+    }
+
+    .battles-spinner .legend-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #081828;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .battles-spinner .legend-avatar-placeholder {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #8ca6c7;
+        letter-spacing: 0.7px;
+    }
+
+    .battles-spinner .legend-text {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .battles-spinner .legend-name {
+        font-size: 13px;
+        font-weight: 800;
+        color: #ffffff;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .battles-spinner .legend-chance {
+        margin-top: 2px;
+        font-size: 11px;
+        color: #8ca6c7;
+    }
+
+    .battles-spinner .legend-item.legend-team-a .legend-avatar,
+    .battles-spinner .legend-item.legend-team-b .legend-avatar {
+        box-shadow: inset 0 0 0 1px rgba(0, 255, 194, 0.18);
+    }
+
+    @keyframes jackpot-wheel-spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     .battles-spinner .inner-waiting {

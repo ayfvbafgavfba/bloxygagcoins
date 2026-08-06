@@ -4,7 +4,7 @@
             <div class="name-inner">{{ box.name }}</div>
         </div>
         <div class="element-image">
-            <img :src="boxImageUrl" @error="onImageError" alt="box" />
+            <img v-bind:src="unboxImagePath + '/public/img/' + box.slug + '.png'" />
         </div>
         <div v-if="battlesSelectedCount === 0" class="element-select">
             <div class="select-price">
@@ -44,17 +44,6 @@
                 unboxImagePath: process.env.VUE_APP_BACKEND_URL
             }
         },
-        computed: {
-            ...mapGetters([
-                'battlesSelected'
-            ]),
-            battlesSelectedCount() {
-                return this.battlesSelected.filter((element) => element._id === this.box._id).length;
-            },
-            boxImageUrl() {
-                return this.unboxImagePath + '/public/img/' + this.box.slug + '.png';
-            }
-        },
         methods: {
             ...mapActions([
                 'battlesAddSelected',
@@ -79,11 +68,14 @@
             },
             battlesDecreaseButton() {
                 this.battlesRemoveSelected(this.box);
-            },
-            onImageError(event) {
-                try {
-                    event.target.src = require('@/assets/img/games/backup/placeholder.webp');
-                } catch (e) {}
+            }
+        },
+        computed: {
+            ...mapGetters([
+                'battlesSelected'
+            ]),
+            battlesSelectedCount() {
+                return this.battlesSelected.filter((element) => element._id === this.box._id).length;
             }
         }
     }

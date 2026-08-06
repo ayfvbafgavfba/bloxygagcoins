@@ -33,12 +33,13 @@
         <div class="game-right">
             <div v-if="battlesGameData.game !== null" class="right-info" v-bind:class="{
                 'info-cursed': battlesGameData.game.options.cursed === true, 
-                'info-terminal': battlesGameData.game.options.terminal === true
+                'info-terminal': battlesGameData.game.options.terminal === true,
+                'info-jackpot': battlesGameData.game.options.jackpot === true
             }">
                 <IconCursedGradient v-if="battlesGameData.game.options.cursed === true" />
                 <IconTerminalGradient v-if="battlesGameData.game.options.terminal === true" />
-                <div class="info-option">{{battlesGetOption}}</div>
-                STANDARD
+                <div v-if="battlesGetOption" class="info-option">{{ battlesGetOption }}</div>
+                <div class="info-mode">{{ battlesGetMode }}</div>
             </div>
             <div class="right-actions">
                 <button v-on:click="battlesFairButton()" class="button-fair">
@@ -168,11 +169,19 @@
             battlesGetOption() {
                 let option = '';
 
-if(this.battlesGameData.game.options.cursed === true && this.battlesGameData.game.options.terminal === false && this.battlesGameData.game.options.jackpot === false) { option = 'CURSED MODE'; }
-            else if(this.battlesGameData.game.options.cursed === false && this.battlesGameData.game.options.terminal === true && this.battlesGameData.game.options.jackpot === false) { option = 'TERMINAL MODE'; }
-            else if(this.battlesGameData.game.options.jackpot === true) { option = 'JACKPOT MODE'; }
+                if(this.battlesGameData.game.options.cursed === true && this.battlesGameData.game.options.terminal === false) { option = 'CURSED MODE'; }
+                else if(this.battlesGameData.game.options.cursed === false && this.battlesGameData.game.options.terminal === true) { option = 'TERMINAL MODE'; }
 
                 return option;
+            },
+            battlesGetMode() {
+                let mode = 'STANDARD';
+
+                if(this.battlesGameData.game.options.jackpot === true) { mode = 'JACKPOT MODE'; }
+                else if(this.battlesGameData.game.options.cursed === true) { mode = 'CURSED MODE'; }
+                else if(this.battlesGameData.game.options.terminal === true) { mode = 'TERMINAL MODE'; }
+
+                return mode;
             },
             battlesGetLink() {
                 let link = 'hypedraft.com/battles/';

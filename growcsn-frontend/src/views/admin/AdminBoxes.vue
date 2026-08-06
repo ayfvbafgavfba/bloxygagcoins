@@ -84,24 +84,15 @@
                 adminName: null,
                 adminImage: null,
                 adminCategories: null,
-                adminItems: []
-            };
-        },
-        computed: {
-            ...mapGetters([
-                'adminBoxList',
-                'adminFilterSearch',
-                'authUser',
-                'socketAdmin'
-            ])
+                adminItems: [] 
+            }
         },
         methods: {
             ...mapActions([
                 'notificationShow',
-                'socketConnectAdmin',
                 'adminSetFilterSearch',
-                'adminSetBoxListPage',
-                'adminGetBoxListSocket',
+                'adminSetBoxListPage', 
+                'adminGetBoxListSocket', 
                 'adminSendBoxCreateSocket'
             ]),
             adminFormatValue(value) {
@@ -112,7 +103,7 @@
 
                 reader.onload = (event) => {
                     this.adminImage = event.target.result;
-                };
+                }
 
                 reader.readAsDataURL(image);
             },
@@ -127,11 +118,7 @@
             },
             adminChangeImage(e) {
                 const image = e.target.files[0];
-                if(image) {
-                    this.adminFormatImage(image);
-                } else {
-                    this.adminImage = null;
-                }
+                this.adminFormatImage(image);
             },
             adminRemoveButton(item) {
                 const index = this.adminItems.findIndex((element) => element.item._id === item.item._id);
@@ -203,28 +190,33 @@
                     return;
                 }
 
-                const data = { name: this.adminName, categories: categories, items: items };
-                if(this.adminImage !== undefined && this.adminImage !== null && String(this.adminImage).trim() !== '') {
-                    data.image = this.adminImage;
+                if(this.adminImage === null || this.adminImage.trim() === '') {
+                    this.notificationShow({ type: 'error', message: 'Your entered image is invalid.' });
+                    return;
                 }
+
+                const data = { name: this.adminName, image: this.adminImage, categories: categories, items: items };
+                console.log(data);
                 this.adminSendBoxCreateSocket(data);
             }
+        },
+        computed: {
+            ...mapGetters([
+                'adminBoxList', 
+                'adminFilterSearch'
+            ])
         },
         created() {
             if(this.adminBoxList.loading === false) {
                 const data = { page: this.adminBoxList.page, search: this.adminFilterSearch };
                 this.adminGetBoxListSocket(data);
             }
-
-            if(this.authUser && this.authUser.user && this.authUser.user.rank === 'admin' && this.socketAdmin && this.socketAdmin.connected !== true) {
-                this.socketConnectAdmin();
-            }
         },
         beforeRouteLeave(to, from, next) {
             this.adminSetFilterSearch('');
             next();
         }
-    };
+    }
 </script>
 
 <style scoped>
