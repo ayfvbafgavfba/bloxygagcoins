@@ -18,9 +18,9 @@
                     <div class="line-center-label">
                         <div class="center-title">JACKPOT</div>
                         <div class="center-subtitle">{{ battlesGetWheelLabel }}</div>
-                        <div v-if="battlesGetUserJackpotBet !== null" class="user-odds-label">
-                            Your odds: {{ battlesGetUserJackpotOdds }}
-                        </div>
+                        <div v-if="battlesGameData.game.state === 'rolling'" class="line-state-label">Rolling through cases...</div>
+                        <div v-else-if="battlesGameData.game.state === 'pending'" class="line-state-label">Awaiting draw...</div>
+                        <div v-if="battlesGetUserJackpotBet !== null" class="user-odds-label">Your odds: {{ battlesGetUserJackpotOdds }}</div>
                     </div>
                 </div>
                 <div class="jackpot-wheel-legend">
@@ -601,14 +601,14 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
     .battles-spinner .avatar-chance {
         position: absolute;
-        top: 100%;
-        margin-top: 8px;
+        left: 50%;
+        top: calc(100% + 8px);
+        transform: translateX(-50%);
         font-size: 10px;
         color: #ffffff;
         letter-spacing: 0.6px;
         text-transform: uppercase;
         white-space: nowrap;
-        transform: translateX(-50%);
     }
 
     .battles-spinner .line-pointer {
@@ -651,6 +651,14 @@ import BattlesReel from '@/components/battles/BattlesReel';
         color: #ffffff;
         opacity: 0.9;
         letter-spacing: 0.4px;
+    }
+
+    .battles-spinner .line-state-label {
+        margin-top: 6px;
+        font-size: 10px;
+        color: #8ca6c7;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
     }
 
     @keyframes line-glow {
