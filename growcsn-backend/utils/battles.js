@@ -39,6 +39,8 @@ const battlesCheckSendCreateData = (data) => {
         throw new Error('Your entered affiliate value is invalid.');
     } else if(data.terminal === undefined || data.terminal === null || typeof data.terminal !== 'boolean') {
         throw new Error('Your entered affiliate value is invalid.');
+    } else if(data.jackpot === undefined || data.jackpot === null || typeof data.jackpot !== 'boolean') {
+        throw new Error('Your entered jackpot value is invalid.');
     }
 }
 
@@ -153,7 +155,8 @@ const battlesGenerateGame = (data, amount, boxes) => {
                     cursed: data.cursed,
                     terminal: data.terminal,
                     private: data.private,
-                    affiliateOnly: data.affiliateOnly
+                    affiliateOnly: data.affiliateOnly,
+                jackpot: data.jackpot === true
                 },
                 fair: {
                     seedServer: seedServer,
@@ -259,7 +262,35 @@ const battlesGetWinnerBets = (battlesGame) => {
     const bets = battlesGame.bets.map((bet) => ({ ...bet, outcomes: bet.outcomes.map((outcome, index) => battlesGetOutcomeItem(rounds[index].box.items, outcome).amountFixed) }));
     let winners = [];
 
-    if(battlesGame.mode === 'group') {
+    if(battlesGame.options.jackpot === true) {
+        const rounds = battlesGetRounds(battlesGame.boxes);
+        const bets = battlesGame.bets.map((bet) => ({
+            ...bet,
+            outcomes: bet.outcomes.map((outcome, index) => battlesGetOutcomeItem(rounds[index].box.items, outcome).amountFixed)
+        }));
+
+        const weights = bets.map((bet) => bet.outcomes.reduce((total, outcome) => total + outcome, 0));
+        const totalWeight = weights.reduce((total, weight) => total + weight, 0);
+
+        let winnerIndex = 0;
+
+        if(totalWeight > 0) {
+            const hash = crypto.createHash('sha256').update(`${battlesGame._id}-${battlesGame.fair.seedServer}-${battlesGame.fair.seedPublic}-jackpot`).digest('hex');
+            let pick = parseInt(hash.substr(0, 12), 16) % totalWeight;
+
+            for(const [index, weight] of weights.entries()) {
+                if(pick < weight) {
+                    winnerIndex = index;
+                    break;
+                }
+                pick -= weight;
+            }
+        } else {
+            winnerIndex = Math.floor(Math.random() * bets.length);
+        }
+
+        winners = [battlesGame.bets[winnerIndex]];
+    } else if(battlesGame.mode === 'group') {
         winners = battlesGame.bets;
     } else if(battlesGame.mode === 'team') {
         const amountOne = battlesGame.options.terminal === false ? 

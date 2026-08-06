@@ -168,8 +168,9 @@
             battlesGetOption() {
                 let option = '';
 
-                if(this.battlesGameData.game.options.cursed === true && this.battlesGameData.game.options.terminal === false) { option = 'CURSED MODE'; }
-                else if(this.battlesGameData.game.options.cursed === false && this.battlesGameData.game.options.terminal === true) { option = 'TERMINAL MODE'; }
+if(this.battlesGameData.game.options.cursed === true && this.battlesGameData.game.options.terminal === false && this.battlesGameData.game.options.jackpot === false) { option = 'CURSED MODE'; }
+            else if(this.battlesGameData.game.options.cursed === false && this.battlesGameData.game.options.terminal === true && this.battlesGameData.game.options.jackpot === false) { option = 'TERMINAL MODE'; }
+            else if(this.battlesGameData.game.options.jackpot === true) { option = 'JACKPOT MODE'; }
 
                 return option;
             },

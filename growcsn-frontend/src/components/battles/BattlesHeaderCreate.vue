@@ -95,7 +95,18 @@
 
                 const mode = this.battlesFilterMode === '2v2' ? 'team' : this.battlesFilterType;
 
-                const data = { boxes: boxes, playerCount: this.battlesGetCountPlayer, mode: mode, levelMin: this.battlesFilterLevel, funding: this.battlesFilterFunding, private: this.battlesFilterPrivate, affiliateOnly: this.battlesFilterAffiliate, cursed: this.battlesFilterCursed, terminal: this.battlesFilterTerminal };
+                const data = {
+                    boxes: boxes,
+                    playerCount: this.battlesGetCountPlayer,
+                    mode: mode,
+                    levelMin: this.battlesFilterLevel,
+                    funding: this.battlesFilterFunding,
+                    private: this.battlesFilterPrivate,
+                    affiliateOnly: this.battlesFilterAffiliate,
+                    cursed: this.battlesFilterCursed,
+                    terminal: this.battlesFilterTerminal,
+                    jackpot: this.battlesFilterJackpot
+                };
                 this.battlesSendCreateSocket(data);
             }
         },
@@ -110,7 +121,8 @@
                 'battlesFilterPrivate',
                 'battlesFilterAffiliate',
                 'battlesFilterCursed',
-                'battlesFilterTerminal'
+                'battlesFilterTerminal',
+                'battlesFilterJackpot'
             ]),
             battlesGetCount() {
                 return this.battlesSelected.length;
