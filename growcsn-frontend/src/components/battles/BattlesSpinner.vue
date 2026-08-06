@@ -6,12 +6,13 @@
                 <div class="jackpot-line-container">
                     <div class="jackpot-line" v-bind:class="{ 'line-running': battlesGameData.game.state === 'rolling' }" v-bind:style="battlesGetLineStyle">
                         <div v-if="battlesGetWheelSlices.length === 0" class="line-empty">Waiting for bets</div>
-                        <div v-for="(slice, index) in battlesGetWheelSlices" :key="index" class="line-avatar" :style="battlesGetLineAvatarStyle(slice)">
-                            <div class="avatar-frame" :class="{ 'avatar-winner': slice.isWinner }">
-                                <AvatarImage v-if="slice.bet !== null && slice.bet.bot !== true" :image="slice.bet.user.avatar" />
-                                <div v-else class="legend-avatar-placeholder">{{ slice.bet === null ? '+' : 'BOT' }}</div>
+                        <div v-for="(slice, index) in battlesGetWheelSlices" :key="'segment-' + index" class="line-segment" :style="battlesGetLineSegmentStyle(slice)"></div>
+                        <div v-for="(bet, index) in battlesGetJackpotBets" :key="'slot-' + index" class="line-avatar" :style="battlesGetLineSlotStyle(index)">
+                            <div class="avatar-frame" :class="{ 'avatar-winner': bet && bet.payout > 0 }">
+                                <AvatarImage v-if="bet !== null && bet.bot !== true" :image="bet.user.avatar" />
+                                <div v-else class="legend-avatar-placeholder">{{ bet === null ? '+' : 'BOT' }}</div>
                             </div>
-                            <div class="avatar-chance">{{ battlesGetChance(slice.bet) }}</div>
+                            <div class="avatar-chance">{{ bet !== null ? battlesGetChance(bet) : '0%' }}</div>
                         </div>
                         <div class="line-pointer"></div>
                     </div>
@@ -129,6 +130,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
     export default {
         name: 'BattlesSpinner',
         components: {
+            AvatarImage,
             IconVersusGradient,
             IconGroupGradient,
             ButtonLoading,
@@ -240,6 +242,23 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 return {
                     left: `${offset}%`,
                     transform: 'translateX(-50%)'
+                };
+            },
+            battlesGetLineSlotStyle(index) {
+                const total = this.battlesGetJackpotBets.length;
+                const offset = total > 1 ? (index / (total - 1)) * 100 : 50;
+                return {
+                    left: `${Math.min(Math.max(offset, 4), 96)}%`,
+                    transform: 'translateX(-50%)'
+                };
+            },
+            battlesGetLineSegmentStyle(slice) {
+                const start = Math.max(slice.start * 100, 0);
+                const end = Math.min(slice.end * 100, 100);
+                return {
+                    left: `${start}%`,
+                    width: `${Math.max(end - start, 0.5)}%`,
+                    background: slice.color
                 };
             },
             battlesGetLineAvatarLabel(slice) {
@@ -580,7 +599,16 @@ import BattlesReel from '@/components/battles/BattlesReel';
         height: 50px;
         display: grid;
         place-items: center;
-        z-index: 2;
+        z-index: 3;
+    }
+
+    .battles-spinner .line-segment {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 24px;
+        border-radius: 999px;
+        opacity: 0.85;
     }
 
     .battles-spinner .avatar-frame {
@@ -609,6 +637,13 @@ import BattlesReel from '@/components/battles/BattlesReel';
         letter-spacing: 0.6px;
         text-transform: uppercase;
         white-space: nowrap;
+        background: rgba(2, 21, 36, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 4px 8px;
+        border-radius: 999px;
+        min-width: 42px;
+        text-align: center;
+        z-index: 4;
     }
 
     .battles-spinner .line-pointer {
