@@ -3,20 +3,25 @@
         <div class="spinner-inner">
             <div v-if="battlesGameData.game !== null && battlesGameData.game.options.jackpot === true" class="jackpot-wheel-panel">
                 <div class="jackpot-wheel-status">{{ battlesGetWheelStatus }}</div>
-                <div class="jackpot-wheel-container">
-                    <div class="jackpot-wheel" v-bind:class="{ 'wheel-running': battlesGameData.game.state === 'rolling' }" v-bind:style="battlesGetWheelStyle">
-                        <div v-for="(slice, index) in battlesGetWheelSlices" :key="index" class="wheel-avatar" :style="battlesGetWheelAvatarStyle(slice)">
-                            <div class="wheel-avatar-inner" :class="{ 'avatar-winner': slice.isWinner }">
+                <div class="jackpot-line-container">
+                    <div class="jackpot-line" v-bind:class="{ 'line-running': battlesGameData.game.state === 'rolling' }" v-bind:style="battlesGetLineStyle">
+                        <div v-if="battlesGetWheelSlices.length === 0" class="line-empty">Waiting for bets</div>
+                        <div v-for="(slice, index) in battlesGetWheelSlices" :key="index" class="line-avatar" :style="battlesGetLineAvatarStyle(slice)">
+                            <div class="avatar-frame" :class="{ 'avatar-winner': slice.isWinner }">
                                 <AvatarImage v-if="slice.bet !== null && slice.bet.bot !== true" :image="slice.bet.user.avatar" />
                                 <div v-else class="legend-avatar-placeholder">{{ slice.bet === null ? '+' : 'BOT' }}</div>
                             </div>
+                            <div class="avatar-chance">{{ battlesGetChance(slice.bet) }}</div>
                         </div>
-                        <div class="wheel-center">
-                            <div class="center-title">JACKPOT</div>
-                            <div class="center-subtitle">{{ battlesGetWheelLabel }}</div>
+                        <div class="line-pointer"></div>
+                    </div>
+                    <div class="line-center-label">
+                        <div class="center-title">JACKPOT</div>
+                        <div class="center-subtitle">{{ battlesGetWheelLabel }}</div>
+                        <div v-if="battlesGetUserJackpotBet !== null" class="user-odds-label">
+                            Your odds: {{ battlesGetUserJackpotOdds }}
                         </div>
                     </div>
-                    <div class="wheel-pointer"></div>
                 </div>
                 <div class="jackpot-wheel-legend">
                     <div v-for="(bet, index) in battlesGetJackpotBets" :key="index" class="legend-item" :class="{ 'legend-empty': bet === null, 'legend-team-a': battlesGetTeamLabel(index) === 'A', 'legend-team-b': battlesGetTeamLabel(index) === 'B' }">
@@ -231,10 +236,14 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 return value < 1 ? `${value.toFixed(1)}%` : `${Math.round(value)}%`;
             },
             battlesGetLineAvatarStyle(slice) {
+                const offset = Math.min(Math.max(slice.leftPercent || (slice.mid * 100), 4), 96);
                 return {
-                    left: `${slice.mid}%`,
+                    left: `${offset}%`,
                     transform: 'translateX(-50%)'
                 };
+            },
+            battlesGetLineAvatarLabel(slice) {
+                return slice.bet !== null ? this.battlesGetChance(slice.bet) : '0%';
             },
             battlesGetJackpotColor(index) {
                 const palette = ['#f2b03f', '#ff8e26', '#00ffc2', '#00aa6d'];
@@ -296,19 +305,21 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 let current = 0;
                 return bets.map((bet, index) => {
                     const amount = Number(bet.amount) || 0;
-                    const sweep = total > 0 ? (amount / total) * 360 : 0;
+                    const percent = total > 0 ? amount / total : 0;
                     const start = current;
-                    const end = current + sweep;
-                    const mid = start + sweep / 2;
+                    const end = current + percent;
+                    const mid = start + percent / 2;
                     current = end;
                     return {
                         bet,
                         index,
                         amount,
-                        percent: total > 0 ? amount / total : 0,
+                        percent,
                         start,
                         end,
                         mid,
+                        midPercent: mid * 100,
+                        leftPercent: mid * 100,
                         color: this.battlesGetJackpotColor(index),
                         isWinner: this.battlesGameData.game !== null && this.battlesGameData.game.state === 'completed' && bet.payout > 0
                     };
@@ -348,6 +359,17 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 const players = this.battlesGetJackpotBets.filter((bet) => bet !== null).length;
                 const total = this.battlesGetJackpotTotal;
                 return `${players} player${players === 1 ? '' : 's'}${total > 0 ? ` • ${this.battlesFormatValue(total)}` : ''}`;
+            },
+            battlesGetUserJackpotBet() {
+                if(this.battlesGameData.game === null || !Array.isArray(this.battlesGameData.game.bets) || !this.authUser.user) {
+                    return null;
+                }
+                return this.battlesGameData.game.bets.find((bet) => bet !== null && bet.user && bet.user._id === this.authUser.user._id) || null;
+            },
+            battlesGetUserJackpotOdds() {
+                const bet = this.battlesGetUserJackpotBet;
+                if(!bet) { return '0%'; }
+                return this.battlesGetChance(bet);
             },
             battlesGetBoxes() {
                 let boxes = [];
@@ -514,7 +536,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
     .battles-spinner .jackpot-line {
         width: 100%;
-        min-height: 72px;
+        min-height: 86px;
         position: relative;
         border-radius: 24px;
         overflow: hidden;
@@ -522,7 +544,8 @@ import BattlesReel from '@/components/battles/BattlesReel';
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
         display: flex;
         align-items: center;
-        padding: 10px 0;
+        padding: 16px 0;
+        justify-content: center;
     }
 
     .battles-spinner .jackpot-line.line-running {
@@ -530,18 +553,34 @@ import BattlesReel from '@/components/battles/BattlesReel';
     }
 
     .battles-spinner .line-segment {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
         height: 24px;
         border-radius: 999px;
+    }
+
+    .battles-spinner .jackpot-line .line-empty {
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+        letter-spacing: 1px;
+        color: #8ca6c7;
+        text-transform: uppercase;
+        padding: 18px 0;
     }
 
     .battles-spinner .line-avatar {
         position: absolute;
         top: 50%;
         transform: translateX(-50%) translateY(-50%);
-        width: 46px;
-        height: 46px;
+        width: 50px;
+        height: 50px;
         display: grid;
         place-items: center;
+        z-index: 2;
     }
 
     .battles-spinner .avatar-frame {
@@ -560,6 +599,18 @@ import BattlesReel from '@/components/battles/BattlesReel';
         border-color: rgba(242, 176, 63, 0.75);
     }
 
+    .battles-spinner .avatar-chance {
+        position: absolute;
+        top: 100%;
+        margin-top: 8px;
+        font-size: 10px;
+        color: #ffffff;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        transform: translateX(-50%);
+    }
+
     .battles-spinner .line-pointer {
         position: absolute;
         top: -6px;
@@ -575,7 +626,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
     .battles-spinner .line-center-label {
         position: absolute;
-        bottom: -42px;
+        bottom: -46px;
         left: 50%;
         transform: translateX(-50%);
         text-align: center;
@@ -588,11 +639,18 @@ import BattlesReel from '@/components/battles/BattlesReel';
         letter-spacing: 1.6px;
         color: #f2b03f;
     }
-
     .battles-spinner .line-center-label .center-subtitle {
         margin-top: 4px;
         font-size: 11px;
         color: #92b0d6;
+    }
+
+    .battles-spinner .user-odds-label {
+        margin-top: 8px;
+        font-size: 11px;
+        color: #ffffff;
+        opacity: 0.9;
+        letter-spacing: 0.4px;
     }
 
     @keyframes line-glow {
@@ -652,6 +710,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
+        margin-top: 4px;
     }
 
     .battles-spinner .legend-item {
