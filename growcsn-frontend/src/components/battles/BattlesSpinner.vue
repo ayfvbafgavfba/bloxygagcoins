@@ -5,6 +5,12 @@
                 <div class="jackpot-wheel-status">{{ battlesGetWheelStatus }}</div>
                 <div class="jackpot-wheel-container">
                     <div class="jackpot-wheel" v-bind:class="{ 'wheel-running': battlesGameData.game.state === 'rolling' }" v-bind:style="battlesGetWheelStyle">
+                        <div v-for="(slice, index) in battlesGetWheelSlices" :key="index" class="wheel-avatar" :style="battlesGetWheelAvatarStyle(slice)">
+                            <div class="wheel-avatar-inner" :class="{ 'avatar-winner': slice.isWinner }">
+                                <AvatarImage v-if="slice.bet !== null && slice.bet.bot !== true" :image="slice.bet.user.avatar" />
+                                <div v-else class="legend-avatar-placeholder">{{ slice.bet === null ? '+' : 'BOT' }}</div>
+                            </div>
+                        </div>
                         <div class="wheel-center">
                             <div class="center-title">JACKPOT</div>
                             <div class="center-subtitle">{{ battlesGetWheelLabel }}</div>
@@ -224,6 +230,12 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 const value = (amount / total) * 100;
                 return value < 1 ? `${value.toFixed(1)}%` : `${Math.round(value)}%`;
             },
+            battlesGetLineAvatarStyle(slice) {
+                return {
+                    left: `${slice.mid}%`,
+                    transform: 'translateX(-50%)'
+                };
+            },
             battlesGetJackpotColor(index) {
                 const palette = ['#f2b03f', '#ff8e26', '#00ffc2', '#00aa6d'];
                 return palette[index % palette.length];
@@ -278,42 +290,50 @@ import BattlesReel from '@/components/battles/BattlesReel';
                     return total + (bet && bet.amount ? Number(bet.amount) : 0);
                 }, 0);
             },
-            battlesGetWheelStyle() {
+            battlesGetWheelSlices() {
+                const total = this.battlesGetJackpotTotal;
                 const bets = this.battlesGetJackpotBets.filter((bet) => bet !== null && Number(bet.amount) > 0);
+                let current = 0;
+                return bets.map((bet, index) => {
+                    const amount = Number(bet.amount) || 0;
+                    const sweep = total > 0 ? (amount / total) * 360 : 0;
+                    const start = current;
+                    const end = current + sweep;
+                    const mid = start + sweep / 2;
+                    current = end;
+                    return {
+                        bet,
+                        index,
+                        amount,
+                        percent: total > 0 ? amount / total : 0,
+                        start,
+                        end,
+                        mid,
+                        color: this.battlesGetJackpotColor(index),
+                        isWinner: this.battlesGameData.game !== null && this.battlesGameData.game.state === 'completed' && bet.payout > 0
+                    };
+                });
+            },
+            battlesGetLineStyle() {
+                const slices = this.battlesGetWheelSlices;
                 const total = this.battlesGetJackpotTotal;
 
-                if(total <= 0 || bets.length === 0) {
+                if(total <= 0 || slices.length === 0) {
                     return {
-                        transform: 'rotate(0deg)',
-                        transition: 'transform 0.6s ease-out'
+                        background: '#071827',
+                        transition: 'background 0.3s ease'
                     };
                 }
 
-                let start = 0;
-                const segments = bets.map((bet, index) => {
-                    const amount = Number(bet.amount) || 0;
-                    const percent = amount / total;
-                    const end = start + percent * 100;
-                    const segment = `${this.battlesGetJackpotColor(index)} ${start}% ${end}%`;
-                    start = end;
-                    return segment;
+                const gradient = slices.map((slice, index) => {
+                    const start = index === 0 ? 0 : slices.slice(0, index).reduce((sum, item) => sum + item.percent, 0) * 100;
+                    const end = start + slice.percent * 100;
+                    return `${slice.color} ${start}% ${end}%`;
                 }).join(', ');
 
-                const winnerIndex = this.battlesGetJackpotBets.findIndex((bet) => bet !== null && bet.payout > 0);
-                let rotate = 0;
-                if(winnerIndex >= 0 && this.battlesGameData.game.state === 'completed') {
-                    const beforeTotal = this.battlesGetJackpotBets.slice(0, winnerIndex).reduce((sum, bet) => {
-                        return sum + (bet && bet.amount ? Number(bet.amount) : 0);
-                    }, 0);
-                    const winnerAmount = Number(this.battlesGetJackpotBets[winnerIndex].amount) || 0;
-                    const middle = beforeTotal + winnerAmount / 2;
-                    rotate = -((middle / total) * 360) + 90;
-                }
-
                 return {
-                    background: `conic-gradient(from 90deg, ${segments})`,
-                    transform: `rotate(${rotate}deg)`,
-                    transition: this.battlesGameData.game.state === 'rolling' ? 'none' : 'transform 1.4s cubic-bezier(0.22, 1, 0.36, 1)'
+                    background: `linear-gradient(90deg, ${gradient})`,
+                    transition: this.battlesGameData.game !== null && this.battlesGameData.game.state === 'rolling' ? 'none' : 'background 0.6s ease'
                 };
             },
             battlesGetWheelStatus() {
@@ -492,31 +512,96 @@ import BattlesReel from '@/components/battles/BattlesReel';
         position: relative;
     }
 
-    .battles-spinner .jackpot-wheel {
+    .battles-spinner .jackpot-line {
+        width: 100%;
+        min-height: 72px;
+        position: relative;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    .battles-spinner .jackpot-line.line-running {
+        animation: line-glow 2.2s ease-in-out infinite;
+    }
+
+    .battles-spinner .line-segment {
+        height: 24px;
+        border-radius: 999px;
+    }
+
+    .battles-spinner .line-avatar {
+        position: absolute;
+        top: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        width: 46px;
+        height: 46px;
+        display: grid;
+        place-items: center;
+    }
+
+    .battles-spinner .avatar-frame {
         width: 100%;
         height: 100%;
         border-radius: 50%;
-        border: 1px solid rgba(242, 176, 63, 0.18);
         overflow: hidden;
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 0 18px rgba(0, 0, 0, 0.2);
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.35) 65%);
+        border: 2px solid rgba(255, 255, 255, 0.12);
+        background: rgba(3, 22, 35, 0.95);
+        display: grid;
+        place-items: center;
     }
 
-    .battles-spinner .jackpot-wheel.wheel-running {
-        animation: jackpot-wheel-spin 2.8s linear infinite;
+    .battles-spinner .avatar-frame.avatar-winner {
+        box-shadow: 0 0 0 4px rgba(242, 176, 63, 0.45);
+        border-color: rgba(242, 176, 63, 0.75);
     }
 
-    .battles-spinner .jackpot-wheel:before {
-        content: '';
+    .battles-spinner .line-pointer {
         position: absolute;
-        inset: 0;
-        border-radius: 50%;
-        background: radial-gradient(circle, transparent 45%, rgba(0,0,0,0.45) 100%);
-        pointer-events: none;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 10px solid #f2b03f;
+        filter: drop-shadow(0 0 8px rgba(242, 176, 63, 0.66));
+    }
+
+    .battles-spinner .line-center-label {
+        position: absolute;
+        bottom: -42px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        width: calc(100% - 40px);
+    }
+
+    .battles-spinner .line-center-label .center-title {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        color: #f2b03f;
+    }
+
+    .battles-spinner .line-center-label .center-subtitle {
+        margin-top: 4px;
+        font-size: 11px;
+        color: #92b0d6;
+    }
+
+    @keyframes line-glow {
+        0%, 100% {
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 0 0 rgba(0, 255, 194, 0);
+        }
+        50% {
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 18px rgba(0, 255, 194, 0.18);
+        }
     }
 
     .battles-spinner .wheel-center {
