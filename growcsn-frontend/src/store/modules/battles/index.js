@@ -13,7 +13,6 @@ const state = {
     battlesFilterAffiliate: false,
     battlesFilterCursed: false,
     battlesFilterTerminal: false,
-    battlesFilterJackpot: false,
     battlesBoxes: [],
     battlesGames: [],
     battlesHistory: [],
@@ -37,7 +36,6 @@ const getters = {
     battlesFilterAffiliate: state => state.battlesFilterAffiliate,
     battlesFilterCursed: state => state.battlesFilterCursed,
     battlesFilterTerminal: state => state.battlesFilterTerminal,
-    battlesFilterJackpot: state => state.battlesFilterJackpot,
     battlesBoxes: state => state.battlesBoxes,
     battlesGames: state => state.battlesGames,
     battlesHistory: state => state.battlesHistory,
@@ -81,9 +79,6 @@ const mutations = {
     },
     battles_set_filter_terminal(state, value) {
         state.battlesFilterTerminal = value;
-    },
-    battles_set_filter_jackpot(state, value) {
-        state.battlesFilterJackpot = value;
     },
     battles_set_boxes(state, boxes) {
         state.battlesBoxes = boxes;
@@ -163,9 +158,6 @@ const actions = {
     battlesSetFilterTerminal({ commit }, value) {
         commit('battles_set_filter_terminal', value);
     },
-    battlesSetFilterJackpot({ commit }, value) {
-        commit('battles_set_filter_jackpot', value);
-    },
     battlesResetFilter({ commit }) {
         commit('battles_set_filter_mode', '1v1');
         commit('battles_set_filter_type', 'standard');
@@ -175,7 +167,6 @@ const actions = {
         commit('battles_set_filter_affiliate', false);
         commit('battles_set_filter_cursed', false);
         commit('battles_set_filter_terminal', false);
-        commit('battles_set_filter_jackpot', false);
         commit('battles_empty_selected');
     },
     battlesAddSelected({ commit }, item) {

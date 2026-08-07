@@ -19,11 +19,11 @@
                     <div v-if="['rolling', 'completed'].includes(battlesGameData.game.state)" class="jackpot-reels">
                         <div v-for="(bet, index) in battlesGetJackpotBets" :key="'reel-' + index" v-if="bet !== null" class="jackpot-reel">
                             <div class="reel-label">{{ bet.bot === true ? 'BOT' : bet.user.username }}</div>
-                            <BattlesReel :reel="battlesReels[index + 1]" :pos="battlesReelsPos" :running="battlesRunning" />
+                            <BattlesReel :reel="battlesReels[index + 1]" :pos="battlesReelsPos" :running="battlesRunning" :track-style="battlesReelStyle" />
                         </div>
                     </div>
                     <div class="line-center-label">
-                        <div class="center-title">JACKPOT</div>
+                        <div class="center-title">{{ battlesGetWheelTitle }}</div>
                         <div class="center-subtitle">{{ battlesGetWheelLabel }}</div>
                         <div v-if="battlesGameData.game.state === 'rolling'" class="line-state-label">Rolling through cases...</div>
                         <div v-else-if="battlesGameData.game.state === 'pending'" class="line-state-label">Awaiting draw...</div>
@@ -416,12 +416,15 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 };
             },
             battlesGetWheelStatus() {
-                if(this.battlesGameData.game === null) { return 'JACKPOT'; }
+                if(this.battlesGameData.game === null) { return 'LIVE NOW'; }
                 if(this.battlesGameData.game.state === 'rolling') { return 'SPINNING...'; }
                 if(this.battlesGameData.game.state === 'pending') { return 'AWAITING DRAW'; }
-                if(['created', 'countdown'].includes(this.battlesGameData.game.state)) { return 'READY TO ROLL'; }
+                if(['created', 'countdown'].includes(this.battlesGameData.game.state)) { return 'READY TO SPIN'; }
                 if(this.battlesGameData.game.state === 'completed') { return 'RESULT'; }
-                return 'JACKPOT';
+                return 'LIVE NOW';
+            },
+            battlesGetWheelTitle() {
+                return this.battlesGameData.game !== null && this.battlesGameData.game.options && this.battlesGameData.game.options.jackpot === true ? 'LIVE JACKPOT BATTLE' : 'LIVE BATTLE';
             },
             battlesGetWheelLabel() {
                 const players = this.battlesGetJackpotBets.filter((bet) => bet !== null).length;
@@ -461,8 +464,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
                     if(this.battlesGameData.game.state === 'rolling' && Array.isArray(this.battlesGameData.game.bets)) {
                         this.battlesAddReels();
-                        this.battlesGetReelsPos();
-                        this.battlesRunning = true;
+                    this.battlesReelsPos = 60;
 
                         for(const [index, bet] of this.battlesGameData.game.bets.entries()) {
                             if(!bet || !bet.outcomes || !Array.isArray(bet.outcomes)) {
@@ -480,12 +482,11 @@ import BattlesReel from '@/components/battles/BattlesReel';
                                 let timeLeft = timeEnding - (new Date().getTime() + this.generalTimeDiff);
                                 timeLeft = timeLeft > 0 ? timeLeft : 0;
 
-                                this.battlesReelStyle = { transform: 'translateX(0px) translateY(-' + (7364 + (105 / 8) * Math.floor(Math.random() * (7 - 1 + 1)) + 1) + 'px)', transition: 'transform ' + timeLeft / 1000 + 's cubic-bezier(0.1, 0, 0.2, 1)' };
-                                
-                                setTimeout(() => {
-                                    this.battlesReelStyle = { transform: 'translateX(0px) translateY(-7416.5px)', transition: 'transform 0.25s cubic-bezier(0.1, 0, 0.2, 1)' };
-                                    
-                                    cancelAnimationFrame(this.battlesReelsPosRepeater);
+                    const spinDistance = 7364 + (105 / 8) * Math.floor(Math.random() * 7 + 1);
+                    this.battlesReelStyle = {
+                        transform: 'translateX(0px) translateY(-' + spinDistance + 'px)',
+                        transition: 'transform ' + (timeLeft / 1000) + 's cubic-bezier(0.25, 0.1, 0.25, 1)'
+                    };
                                     setTimeout(() => { 
                                         this.battlesRunning = false;
 
@@ -579,20 +580,30 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
     .battles-spinner .jackpot-wheel-panel {
         width: 100%;
-        padding: 22px 24px;
+        padding: 18px 18px 14px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 18px;
+        gap: 14px;
         position: relative;
+        background: rgba(4, 15, 29, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
     }
 
     .battles-spinner .jackpot-wheel-status {
-        font-size: 11px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding-bottom: 6px;
+        font-size: 10px;
         letter-spacing: 1.8px;
         text-transform: uppercase;
-        font-weight: 800;
+        font-weight: 700;
         color: #f2b03f;
     }
 
@@ -604,16 +615,18 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
     .battles-spinner .jackpot-line {
         width: 100%;
-        min-height: 86px;
+        min-height: 72px;
+        max-height: 96px;
         position: relative;
-        border-radius: 24px;
+        border-radius: 18px;
         overflow: hidden;
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
         display: flex;
         align-items: center;
-        padding: 16px 0;
+        padding: 12px 0;
         justify-content: center;
+        background: rgba(4, 26, 48, 0.72);
     }
 
     .battles-spinner .jackpot-line.line-running {
@@ -631,24 +644,28 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
     .battles-spinner .jackpot-reels {
         width: 100%;
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         gap: 12px;
-        justify-content: space-between;
         margin-top: 16px;
     }
 
     .battles-spinner .jackpot-reel {
-        flex: 1;
+        width: 100%;
         min-width: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 8px;
+        padding: 12px;
+        border-radius: 18px;
+        background: rgba(4, 20, 34, 0.92);
+        border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .battles-spinner .jackpot-reel .reel-label {
         font-size: 11px;
-        color: #8ca6c7;
+        color: #ffffff;
         text-transform: uppercase;
         letter-spacing: 0.4px;
         width: 100%;
@@ -743,6 +760,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
         transform: translateX(-50%);
         text-align: center;
         width: calc(100% - 40px);
+        pointer-events: none;
     }
 
     .battles-spinner .line-center-label .center-title {
@@ -828,7 +846,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
     .battles-spinner .jackpot-wheel-legend {
         width: 100%;
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 10px;
         margin-top: 4px;
     }
@@ -836,10 +854,10 @@ import BattlesReel from '@/components/battles/BattlesReel';
     .battles-spinner .legend-item {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px;
+        gap: 10px;
+        padding: 10px;
         border-radius: 16px;
-        background: rgba(6, 21, 37, 0.9);
+        background: rgba(6, 16, 30, 0.94);
         border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
@@ -848,11 +866,11 @@ import BattlesReel from '@/components/battles/BattlesReel';
     }
 
     .battles-spinner .legend-avatar {
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         border-radius: 50%;
         overflow: hidden;
-        background: #081828;
+        background: #07172b;
         display: grid;
         place-items: center;
         border: 1px solid rgba(255, 255, 255, 0.08);

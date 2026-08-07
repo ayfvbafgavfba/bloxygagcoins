@@ -144,6 +144,7 @@
 
                 if(this.battlesFilterMode === '2v2' || this.battlesFilterMode === '1v1v1v1') { count = 4; }
                 else if(this.battlesFilterMode === '1v1v1') { count = 3; }
+                else if(this.battlesFilterMode === '3v3') { count = 6; }
 
                 return count;
             },

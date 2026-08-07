@@ -21,14 +21,6 @@
                 <span>TERMINAL MODE</span>
                 <button v-on:click="battlesTerminalToggle(!battlesFilterTerminal)"></button>
             </div>
-            <div class="right-jackpot" v-bind:class="{ 'jackpot-active': battlesFilterJackpot === true }">
-                <span>JACKPOT MODE</span>
-                <button class="jackpot-toggle" v-on:click="battlesJackpotToggle(!battlesFilterJackpot)">
-                    <span class="toggle-track">
-                        <span class="toggle-thumb"></span>
-                    </span>
-                </button>
-            </div>
         </div>
     </div>
 </template>
@@ -51,8 +43,7 @@
                 'battlesSetFilterPrivate',
                 'battlesSetFilterAffiliate',
                 'battlesSetFilterCursed',
-                'battlesSetFilterTerminal',
-                'battlesSetFilterJackpot'
+                'battlesSetFilterTerminal'
             ]),
             battlesPrivateToggle() {
                 if(this.battlesFilterPrivate === true) { this.battlesSetFilterAffiliate(false); }
@@ -75,9 +66,6 @@
                 }
 
                 this.battlesSetFilterTerminal(value);
-            },
-            battlesJackpotToggle(value) {
-                this.battlesSetFilterJackpot(value);
             }
         },
         computed: {
@@ -85,8 +73,7 @@
                 'battlesFilterPrivate',
                 'battlesFilterAffiliate',
                 'battlesFilterCursed',
-                'battlesFilterTerminal',
-                'battlesFilterJackpot'
+                'battlesFilterTerminal'
             ]) 
         }
     }
@@ -175,21 +162,18 @@
     }
 
     .battles-create-footer .right-cursed,
-    .battles-create-footer .right-terminal,
-    .battles-create-footer .right-jackpot {
+    .battles-create-footer .right-terminal {
         display: flex;
         align-items: center;
     }
 
-    .battles-create-footer .right-terminal,
-    .battles-create-footer .right-jackpot {
+    .battles-create-footer .right-terminal {
         position: relative;
         margin-left: 20px;
         padding-left: 20px;
     }
 
-    .battles-create-footer .right-terminal:before,
-    .battles-create-footer .right-jackpot:before {
+    .battles-create-footer .right-terminal:before {
         content: '';
         width: 1px;
         height: 27px;
@@ -206,8 +190,7 @@
     }
 
     .battles-create-footer .right-cursed span,
-    .battles-create-footer .right-terminal span,
-    .battles-create-footer .right-jackpot span {
+    .battles-create-footer .right-terminal span {
         margin-right: 12px;
         font-size: 14px;
         font-weight: 800;
@@ -225,10 +208,6 @@
         -webkit-text-fill-color: transparent;
     }
 
-    .battles-create-footer .right-jackpot.jackpot-active span {
-        color: #f2b03f;
-    }
-
     .battles-create-footer .right-cursed button,
     .battles-create-footer .right-terminal button {
         width: 45px;
@@ -238,8 +217,7 @@
     }
 
     .battles-create-footer .right-cursed button:before,
-    .battles-create-footer .right-terminal button:before,
-    .battles-create-footer .right-jackpot button:before {
+    .battles-create-footer .right-terminal button:before {
         content: '';
         width: 100%;
         height: 100%;
@@ -251,8 +229,7 @@
     }
 
     .battles-create-footer .right-cursed button:after,
-    .battles-create-footer .right-terminal button:after,
-    .battles-create-footer .right-jackpot button:after {
+    .battles-create-footer .right-terminal button:after {
         content: '';
         width: 25px;
         height: 19px;
@@ -265,37 +242,9 @@
     }
 
     .battles-create-footer .right-cursed.cursed-active button:after,
-    .battles-create-footer .right-terminal.terminal-active button:after,
-    .battles-create-footer .right-jackpot.jackpot-active button:after {
+    .battles-create-footer .right-terminal.terminal-active button:after {
         transform: translate(20px, 0);
         background: linear-gradient(255deg, #00ffc2 0%, #00aa6d 100%);
-    }
-
-    .battles-create-footer .right-jackpot button:after {
-        background: #0a2f4b;
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 0 10px rgba(242, 176, 63, 0.25);
-        transition: all 0.3s ease;
-    }
-
-    .battles-create-footer .right-jackpot.jackpot-active button:after {
-        animation: jackpot-spin 1.2s linear infinite;
-        background: conic-gradient(from 0deg, #f2b03f 0%, #ffdd7b 40%, #f2b03f 80%, #ffdd7b 100%);
-    }
-
-    .battles-create-footer .right-jackpot.jackpot-active span {
-        background: linear-gradient(216deg, #f2b03f 0%, #ff8e26 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    @keyframes jackpot-spin {
-        from {
-            transform: translate(20px, 0) rotate(0deg);
-        }
-        to {
-            transform: translate(20px, 0) rotate(360deg);
-        }
     }
 
     @media only screen and (max-width: 850px) {

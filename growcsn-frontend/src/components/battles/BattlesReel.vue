@@ -1,18 +1,20 @@
 <template>
-    <div  class="battles-reel">
-        <div v-for="(item, index) in reel" v-bind:key="index" class="reel-element" v-bind:class="[
-            'element-' + item.color, 
-            { 'element-active': index === pos }
-        ]">
-            <div class="element-image">
-                <img v-bind:src="localImage(item.item.image)" @error="onImgError($event)" />
-            </div>
-            <div v-if="index === 60 && running === false" class="element-info">
-                <span>{{item.item.name}}</span>
-                <div class="info-amount">
-                    <img src="@/assets/img/icons/coin.svg" alt="icon" />
-                    <div class="amount-value">
-                        {{ battlesFormatValue(item.item.amountFixed * 1) }}
+    <div class="battles-reel">
+        <div class="reel-track" :style="trackStyle">
+            <div v-for="(item, index) in reel" v-bind:key="index" class="reel-element" v-bind:class="[
+                'element-' + item.color,
+                { 'element-active': index === pos }
+            ]">
+                <div class="element-image">
+                    <img v-bind:src="localImage(item.item.image)" @error="onImgError($event)" />
+                </div>
+                <div v-if="index === 60 && running === false" class="element-info">
+                    <span>{{ item.item.name }}</span>
+                    <div class="info-amount">
+                        <img src="@/assets/img/icons/coin.svg" alt="icon" />
+                        <div class="amount-value">
+                            {{ battlesFormatValue(item.item.amountFixed * 1) }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -37,22 +39,23 @@
             IconItemYellow
         },
         props: [
-            'reel', 
-            'pos', 
-            'running'
+            'reel',
+            'pos',
+            'running',
+            'trackStyle'
         ],
         methods: {
             battlesFormatValue(value) {
                 const amount = Number(value) || 0;
                 if (amount >= 1000000) {
-                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'M';
                 }
                 if (amount >= 1000) {
                     return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
                 }
                 return amount.toLocaleString('en-US');
             },
-            localImage(src) { if(!src) return ''; try { const parts = src.split('/'); const file = parts[parts.length - 1]; return '/' + file; } catch (e) { return src; } },
+            localImage(src) { if (!src) return ''; try { const parts = src.split('/'); const file = parts[parts.length - 1]; return '/' + file; } catch (e) { return src; } },
             onImgError(event) { try { const parts = event.target.src.split('/'); const file = parts[parts.length - 1]; event.target.src = '/img/items/' + file; } catch (e) {} }
         }
     }
@@ -61,20 +64,52 @@
 <style scoped>
     .battles-reel {
         width: 100%;
-        height: 100%;
+        height: 420px;
+        max-height: 420px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(2, 14, 26, 0.55);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    }
+
+    .battles-reel::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 8px;
+        right: 8px;
+        height: 118px;
+        transform: translateY(-50%);
+        border-radius: 18px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+        pointer-events: none;
+    }
+
+    .battles-reel .reel-track {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        transition: transform 0.3s ease;
     }
 
     .battles-reel .reel-element {
         width: 100%;
-        height: 100%;
+        height: 105px;
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
         opacity: 0.25;
+        transition: opacity 0.25s ease, transform 0.25s ease;
     }
 
     .battles-reel .reel-element:last-child {
@@ -92,6 +127,10 @@
         justify-content: center;
         align-items: center;
         position: relative;
+    }
+
+    .battles-reel .reel-element.element-active .element-image {
+        transform: scale(1.08);
     }
 
     .battles-game .element-image svg {
