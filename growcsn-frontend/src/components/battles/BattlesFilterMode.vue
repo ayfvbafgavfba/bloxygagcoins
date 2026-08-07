@@ -110,7 +110,7 @@
     }
 
     .battles-filter-mode.mode-open .mode-menu {
-        height: 190px;
+        height: 235px;
     }
 
     .battles-filter-mode.mode-open.mode-group .mode-menu {
