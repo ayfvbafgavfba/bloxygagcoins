@@ -3,7 +3,7 @@
         <div class="element-inner">
             <div class="inner-name">{{item.item.name}}</div>
             <div class="inner-image">
-                <img v-bind:src="localImage(item.item.image)" @error="onImgError($event)" />
+                <img v-bind:src="getItemImage(item)" @error="onImgError($event)" />
             </div>
             <div class="inner-price">
                 <img src="@/assets/img/icons/coin.svg" alt="icon" />

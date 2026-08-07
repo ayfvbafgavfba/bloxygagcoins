@@ -2,18 +2,18 @@
     <div class="battles-reel">
         <div class="reel-track" :style="trackStyle">
             <div v-for="(item, index) in reel" v-bind:key="index" class="reel-element" v-bind:class="[
-                'element-' + item.color,
+                'element-' + (item && item.color ? item.color : 'yellow'),
                 { 'element-active': index === pos }
             ]">
                 <div class="element-image">
-                    <img v-bind:src="localImage(item && item.item ? item.item.image : '')" @error="onImgError($event)" />
+                    <img v-bind:src="getItemImage(item)" @error="onImgError($event)" />
                 </div>
-                <div v-if="index === 60 && running === false && item && item.item" class="element-info">
-                    <span>{{ item.item.name }}</span>
-                    <div class="info-amount">
+                <div v-if="index === 60 && running === false && item" class="element-info">
+                    <span>{{ getItemName(item) }}</span>
+                    <div class="info-amount" v-if="getItemAmount(item) !== null">
                         <img src="@/assets/img/icons/coin.svg" alt="icon" />
                         <div class="amount-value">
-                            {{ battlesFormatValue(item.item.amountFixed * 1) }}
+                            {{ battlesFormatValue(getItemAmount(item) * 1) }}
                         </div>
                     </div>
                 </div>
@@ -48,15 +48,56 @@
             battlesFormatValue(value) {
                 const amount = Number(value) || 0;
                 if (amount >= 1000000) {
-                    return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'M';
+                    return (amount / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
                 }
                 if (amount >= 1000) {
                     return (amount / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
                 }
                 return amount.toLocaleString('en-US');
             },
-            localImage(src) { if (!src) return ''; try { const parts = src.split('/'); const file = parts[parts.length - 1]; return '/' + file; } catch (e) { return src; } },
-            onImgError(event) { try { const parts = event.target.src.split('/'); const file = parts[parts.length - 1]; event.target.src = '/img/items/' + file; } catch (e) {} }
+            getItemName(item) {
+                if (!item) { return 'Unknown'; }
+                if (item.item && item.item.name) { return item.item.name; }
+                if (item.name) { return item.name; }
+                if (item.item_name) { return item.item_name; }
+                return 'Unknown';
+            },
+            getItemImage(item) {
+                if (!item) { return ''; }
+                const src = item.item && item.item.image ? item.item.image
+                    : item.item && item.item.item_image ? item.item.item_image
+                    : item.image ? item.image
+                    : item.item_image ? item.item_image
+                    : '';
+                return this.localImage(src);
+            },
+            getItemAmount(item) {
+                if (!item) { return null; }
+                if (item.item && item.item.amountFixed) { return Number(item.item.amountFixed); }
+                if (item.amountFixed) { return Number(item.amountFixed); }
+                if (item.item && item.item.item_value) { return Number(item.item.item_value); }
+                return null;
+            },
+            localImage(src) {
+                if (!src) return '';
+                try {
+                    if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
+                        return src;
+                    }
+                    const baseUrl = process.env.BASE_URL || '/';
+                    return `${baseUrl.replace(/\/$/, '')}/${src.replace(/^\//, '')}`;
+                } catch (e) {
+                    return src;
+                }
+            },
+            onImgError(event) {
+                try {
+                    const parts = event.target.src.split('/');
+                    const file = parts[parts.length - 1];
+                    const baseUrl = process.env.BASE_URL || '/';
+                    event.target.src = `${baseUrl.replace(/\/$/, '')}/img/items/${file}`;
+                } catch (e) {}
+            }
         }
     }
 </script>

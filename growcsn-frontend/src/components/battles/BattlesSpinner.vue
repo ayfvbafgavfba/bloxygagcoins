@@ -81,7 +81,7 @@
                     </div>
                     <div v-else-if="['pending', 'rolling'].includes(battlesGameData.game.state) === true" class="element-wheel">
 
-                        <BattlesReel v-bind:ref="'reel-' + (index + 1)" v-bind:style="battlesReelStyle" v-bind:reel="battlesReels[index + 1]" v-bind:pos="battlesReelsPos" v-bind:running="battlesRunning" />
+                        <BattlesReel v-bind:ref="'reel-' + (index + 1)" v-bind:track-style="battlesReelStyle" v-bind:reel="battlesReels[index + 1]" v-bind:pos="battlesReelsPos" v-bind:running="battlesRunning" />
 
                     </div>
                     <div v-else-if="['completed'].includes(battlesGameData.game.state) === true" class="element-completed" v-bind:class="{ 'completed-winner': bet.payout > 0 }">
@@ -184,8 +184,20 @@ import BattlesReel from '@/components/battles/BattlesReel';
             },
             battlesGetBoxItems(box) {
                 let items = [];
+                let sourceBox = box;
 
-                for(let item of this.battlesGetItemsFormated(box.items)) {
+                if(!sourceBox || !Array.isArray(sourceBox.items) || sourceBox.items.length === 0) {
+                    const fallbackBox = this.battlesBoxes.find((storedBox) => storedBox._id === (sourceBox && sourceBox._id ? sourceBox._id : null));
+                    if(fallbackBox && Array.isArray(fallbackBox.items) && fallbackBox.items.length > 0) {
+                        sourceBox = fallbackBox;
+                    }
+                }
+
+                if(!sourceBox || !Array.isArray(sourceBox.items)) {
+                    return items;
+                }
+
+                for(let item of this.battlesGetItemsFormated(sourceBox.items)) {
                     const count = Math.floor(item.tickets / 1000);
                     for(let i = 0; i < (count <= 0 ? 1 : count); i++) { items.push(item); }
                 }
@@ -201,18 +213,32 @@ import BattlesReel from '@/components/battles/BattlesReel';
                     if(outcome <= pos) { outcomeItem = item; break; }
                 }
 
+                if(outcomeItem === null && items.length > 0) {
+                    outcomeItem = items[items.length - 1];
+                }
+
                 return outcomeItem;
+            },
+            battlesGetReelSpacing() {
+                return 117;
+            },
+            battlesGetReelCenterOffset() {
+                return 420 / 2 - 105 / 2;
+            },
+            battlesGetReelTranslateY(position) {
+                return Math.round((position * this.battlesGetReelSpacing()) - this.battlesGetReelCenterOffset());
             },
             battlesAddReels() {
                 const reelCount = this.battlesGameData.game ? this.battlesGameData.game.playerCount : 4;
                 const outcomeIndex = this.battlesGameData.game && Array.isArray(this.battlesGameData.game.bets) && this.battlesGameData.game.bets[0] && Array.isArray(this.battlesGameData.game.bets[0].outcomes)
                     ? Math.max(0, this.battlesGameData.game.bets[0].outcomes.length - 1)
                     : 0;
-                const items = this.battlesGetBoxItems(this.battlesGetBoxes[outcomeIndex]);
+                const box = this.battlesGetBoxes[outcomeIndex] || this.battlesGetBoxes[0] || { items: [] };
+                const items = this.battlesGetBoxItems(box);
                 this.battlesReels = {};
 
                 for(let reel = 1; reel <= reelCount; reel++) {
-                    this.battlesReels[reel] = [];
+                    this.$set(this.battlesReels, reel, []);
                     for(let i = 0; i < 80; i++) {
                         this.battlesReels[reel].push(items.length > 0 ? items[Math.floor(Math.random() * items.length)] : null);
                     }
@@ -337,7 +363,8 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 'generalTimeDiff',
                 'socketSendLoading',
                 'authUser',
-                'battlesGameData'
+                'battlesGameData',
+                'battlesBoxes'
             ]),
             battlesGetBets() {
                 if(this.battlesGameData.game === null || !Array.isArray(this.battlesGameData.game.bets)) {
@@ -489,7 +516,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
                             setTimeout(() => {
                                 const currentTime = Date.now() + this.generalTimeDiff;
                                 const durationSeconds = Math.max(0, timeEnding - currentTime) / 1000;
-                                const spinDistance = 7364 + (105 / 8) * Math.floor(Math.random() * 7 + 1);
+                                const spinDistance = this.battlesGetReelTranslateY(60);
                                 this.battlesReelStyle = {
                                     transform: 'translateX(0px) translateY(-' + spinDistance + 'px)',
                                     transition: 'transform ' + Math.max(durationSeconds, 0.2) + 's cubic-bezier(0.25, 0.1, 0.25, 1)'
