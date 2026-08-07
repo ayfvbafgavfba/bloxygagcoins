@@ -464,7 +464,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
                     if(this.battlesGameData.game.state === 'rolling' && Array.isArray(this.battlesGameData.game.bets)) {
                         this.battlesAddReels();
-                    this.battlesReelsPos = 60;
+                        this.battlesReelsPos = 60;
 
                         for(const [index, bet] of this.battlesGameData.game.bets.entries()) {
                             if(!bet || !bet.outcomes || !Array.isArray(bet.outcomes)) {
@@ -482,22 +482,22 @@ import BattlesReel from '@/components/battles/BattlesReel';
                                 let timeLeft = timeEnding - (new Date().getTime() + this.generalTimeDiff);
                                 timeLeft = timeLeft > 0 ? timeLeft : 0;
 
-                    const spinDistance = 7364 + (105 / 8) * Math.floor(Math.random() * 7 + 1);
-                    this.battlesReelStyle = {
-                        transform: 'translateX(0px) translateY(-' + spinDistance + 'px)',
-                        transition: 'transform ' + (timeLeft / 1000) + 's cubic-bezier(0.25, 0.1, 0.25, 1)'
-                    };
-                                    setTimeout(() => { 
-                                        this.battlesRunning = false;
+                                const spinDistance = 7364 + (105 / 8) * Math.floor(Math.random() * 7 + 1);
+                                this.battlesReelStyle = {
+                                    transform: 'translateX(0px) translateY(-' + spinDistance + 'px)',
+                                    transition: 'transform ' + (timeLeft / 1000) + 's cubic-bezier(0.25, 0.1, 0.25, 1)'
+                                };
 
-                                        if(this.soundBattles === 1) {
-                                            this.soundUnbox.volume = this.soundVolume;
-                                            this.soundUnbox.currentTime = 0;
-                                            this.soundUnbox.play();
-                                        }
-                                    }, 250);
-                                }, timeLeft + 100);
-                            }, 250);
+                                setTimeout(() => {
+                                    this.battlesRunning = false;
+
+                                    if(this.soundBattles === 1) {
+                                        this.soundUnbox.volume = this.soundVolume;
+                                        this.soundUnbox.currentTime = 0;
+                                        this.soundUnbox.play();
+                                    }
+                                }, 250);
+                            }, timeLeft + 100);
                         }
                     } else if(this.battlesGameData.game.state === 'completed') {
                         if(this.soundBattles === 1) {
