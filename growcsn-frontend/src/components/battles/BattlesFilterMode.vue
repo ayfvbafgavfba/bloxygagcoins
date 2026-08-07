@@ -14,6 +14,7 @@
                 <button v-on:click="battlesModeButton('1v1v1')">1v1v1</button>
                 <button v-on:click="battlesModeButton('1v1v1v1')">1v1v1v1</button>
                 <button v-if="battlesFilterType === 'standard'" v-on:click="battlesModeButton('2v2')">2v2</button>
+                <button v-if="battlesFilterType === 'standard'" v-on:click="battlesModeButton('3v3')">3v3</button>
             </div>
         </div>
     </div>

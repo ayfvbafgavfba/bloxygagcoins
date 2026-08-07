@@ -93,20 +93,9 @@
                     else { boxes.push({ _id: selected._id, count: 1 }); }
                 }
 
-                const mode = this.battlesFilterMode === '2v2' ? 'team' : this.battlesFilterType;
+                const mode = this.battlesFilterMode === '2v2' || this.battlesFilterMode === '3v3' ? 'team' : this.battlesFilterType;
 
-                const data = {
-                    boxes: boxes,
-                    playerCount: this.battlesGetCountPlayer,
-                    mode: mode,
-                    levelMin: this.battlesFilterLevel,
-                    funding: this.battlesFilterFunding,
-                    private: this.battlesFilterPrivate,
-                    affiliateOnly: this.battlesFilterAffiliate,
-                    cursed: this.battlesFilterCursed,
-                    terminal: this.battlesFilterTerminal,
-                    jackpot: this.battlesFilterJackpot
-                };
+                const data = { boxes: boxes, playerCount: this.battlesGetCountPlayer, mode: mode, levelMin: this.battlesFilterLevel, funding: this.battlesFilterFunding, private: this.battlesFilterPrivate, affiliateOnly: this.battlesFilterAffiliate, cursed: this.battlesFilterCursed, terminal: this.battlesFilterTerminal };
                 this.battlesSendCreateSocket(data);
             }
         },
@@ -121,8 +110,7 @@
                 'battlesFilterPrivate',
                 'battlesFilterAffiliate',
                 'battlesFilterCursed',
-                'battlesFilterTerminal',
-                'battlesFilterJackpot'
+                'battlesFilterTerminal'
             ]),
             battlesGetCount() {
                 return this.battlesSelected.length;
@@ -132,6 +120,7 @@
 
                 if(this.battlesFilterMode === '2v2' || this.battlesFilterMode === '1v1v1v1') { count = 4; }
                 else if(this.battlesFilterMode === '1v1v1') { count = 3; }
+                else if(this.battlesFilterMode === '3v3') { count = 6; }
 
                 return count;
             },

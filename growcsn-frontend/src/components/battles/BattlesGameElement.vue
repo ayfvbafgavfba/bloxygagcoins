@@ -170,8 +170,7 @@
                 let mode = '1v1';
 
                 if(this.game.mode === 'group')  { mode = 'Group'; }
-                else if(this.game.mode === 'team') { mode = '2v2'; }
-                else if(this.game.playerCount === 3) { mode = '1v1v1'; }
+            else if(this.game.mode === 'team') { mode = this.game.playerCount === 6 ? '3v3' : '2v2'; }
                 else if(this.game.playerCount === 4) { mode = '1v1v1v1'; }
 
                 return mode;
