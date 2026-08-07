@@ -416,15 +416,15 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 };
             },
             battlesGetWheelStatus() {
-                if(this.battlesGameData.game === null) { return 'BATTLE JACKPOT'; }
+                if(this.battlesGameData.game === null) { return 'LIVE NOW'; }
                 if(this.battlesGameData.game.state === 'rolling') { return 'SPINNING...'; }
                 if(this.battlesGameData.game.state === 'pending') { return 'AWAITING DRAW'; }
-                if(['created', 'countdown'].includes(this.battlesGameData.game.state)) { return 'READY TO ROLL'; }
+                if(['created', 'countdown'].includes(this.battlesGameData.game.state)) { return 'READY TO SPIN'; }
                 if(this.battlesGameData.game.state === 'completed') { return 'RESULT'; }
-                return 'BATTLE JACKPOT';
+                return 'LIVE NOW';
             },
             battlesGetWheelTitle() {
-                return this.battlesGameData.game !== null && this.battlesGameData.game.options && this.battlesGameData.game.options.jackpot === true ? 'BATTLE JACKPOT' : 'BATTLE';
+                return this.battlesGameData.game !== null && this.battlesGameData.game.options && this.battlesGameData.game.options.jackpot === true ? 'LIVE JACKPOT BATTLE' : 'LIVE BATTLE';
             },
             battlesGetWheelLabel() {
                 const players = this.battlesGetJackpotBets.filter((bet) => bet !== null).length;
