@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     <div class="line-center-label">
-                        <div class="center-title">JACKPOT</div>
+                        <div class="center-title">{{ battlesGetWheelTitle }}</div>
                         <div class="center-subtitle">{{ battlesGetWheelLabel }}</div>
                         <div v-if="battlesGameData.game.state === 'rolling'" class="line-state-label">Rolling through cases...</div>
                         <div v-else-if="battlesGameData.game.state === 'pending'" class="line-state-label">Awaiting draw...</div>
@@ -416,12 +416,15 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 };
             },
             battlesGetWheelStatus() {
-                if(this.battlesGameData.game === null) { return 'JACKPOT'; }
+                if(this.battlesGameData.game === null) { return 'BATTLE JACKPOT'; }
                 if(this.battlesGameData.game.state === 'rolling') { return 'SPINNING...'; }
                 if(this.battlesGameData.game.state === 'pending') { return 'AWAITING DRAW'; }
                 if(['created', 'countdown'].includes(this.battlesGameData.game.state)) { return 'READY TO ROLL'; }
                 if(this.battlesGameData.game.state === 'completed') { return 'RESULT'; }
-                return 'JACKPOT';
+                return 'BATTLE JACKPOT';
+            },
+            battlesGetWheelTitle() {
+                return this.battlesGameData.game !== null && this.battlesGameData.game.options && this.battlesGameData.game.options.jackpot === true ? 'BATTLE JACKPOT' : 'BATTLE';
             },
             battlesGetWheelLabel() {
                 const players = this.battlesGetJackpotBets.filter((bet) => bet !== null).length;
