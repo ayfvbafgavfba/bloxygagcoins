@@ -6,9 +6,9 @@
                 { 'element-active': index === pos }
             ]">
                 <div class="element-image">
-                    <img v-bind:src="localImage(item.item.image)" @error="onImgError($event)" />
+                    <img v-bind:src="localImage(item && item.item ? item.item.image : '')" @error="onImgError($event)" />
                 </div>
-                <div v-if="index === 60 && running === false" class="element-info">
+                <div v-if="index === 60 && running === false && item && item.item" class="element-info">
                     <span>{{ item.item.name }}</span>
                     <div class="info-amount">
                         <img src="@/assets/img/icons/coin.svg" alt="icon" />
@@ -64,8 +64,8 @@
 <style scoped>
     .battles-reel {
         width: 100%;
-        height: 420px;
-        max-height: 420px;
+        height: 100%;
+        min-height: 274px;
         position: relative;
         overflow: hidden;
         display: flex;

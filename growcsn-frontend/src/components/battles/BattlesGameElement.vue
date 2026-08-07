@@ -248,6 +248,7 @@
 
     .battles-game-element .inner-info {
         width: 135px;
+        flex: 0 0 135px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -389,7 +390,8 @@
     }
 
     .battles-game-element .inner-players {
-        width: 315px;
+        flex: 0 0 auto;
+        min-width: 240px;
         display: flex;
         align-items: center;
         padding-right: 32px;
@@ -508,11 +510,13 @@
     }
 
     .battles-game-element .inner-cases {
-        width: calc(100% - 825px);
+        flex: 1 1 auto;
+        min-width: 260px;
     }
 
     .battles-game-element .inner-right {
         width: 375px;
+        flex: 0 0 375px;
         display: flex;
         justify-content: space-between;
         align-items: center;

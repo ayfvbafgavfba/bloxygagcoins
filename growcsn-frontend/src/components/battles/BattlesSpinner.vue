@@ -19,7 +19,7 @@
                     <div v-if="['rolling', 'completed'].includes(battlesGameData.game.state)" class="jackpot-reels">
                         <div v-for="(bet, index) in battlesGetJackpotBets" :key="'reel-' + index" v-if="bet !== null" class="jackpot-reel">
                             <div class="reel-label">{{ bet.bot === true ? 'BOT' : bet.user.username }}</div>
-                            <BattlesReel :reel="battlesReels[index + 1]" :pos="battlesReelsPos" :running="battlesRunning" :track-style="battlesReelStyle" />
+                            <BattlesReel :reel="battlesReels[index + 1] || []" :pos="battlesReelsPos" :running="battlesRunning" :track-style="battlesReelStyle" />
                         </div>
                     </div>
                     <div class="line-center-label">
@@ -149,12 +149,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 battlesRunning: false,
                 battlesReelsPosRepeater: null,
                 battlesReelsPos: 20,
-                battlesReels: {
-                    1: [],
-                    2: [],
-                    3: [],
-                    4: []
-                },
+                battlesReels: {},
                 battlesReelStyle: { transform: 'translateX(0px) translateY(-2416.5px)', transition: 'none' }
             }
         },
@@ -209,16 +204,26 @@ import BattlesReel from '@/components/battles/BattlesReel';
                 return outcomeItem;
             },
             battlesAddReels() {
-                let items = this.battlesGetBoxItems(this.battlesGetBoxes[this.battlesGameData.game.bets[0].outcomes.length - 1]);
-                this.battlesReels = { 1: [], 2: [], 3: [], 4: [] };
+                const reelCount = this.battlesGameData.game ? this.battlesGameData.game.playerCount : 4;
+                const outcomeIndex = this.battlesGameData.game && Array.isArray(this.battlesGameData.game.bets) && this.battlesGameData.game.bets[0] && Array.isArray(this.battlesGameData.game.bets[0].outcomes)
+                    ? Math.max(0, this.battlesGameData.game.bets[0].outcomes.length - 1)
+                    : 0;
+                const items = this.battlesGetBoxItems(this.battlesGetBoxes[outcomeIndex]);
+                this.battlesReels = {};
 
-                for(const reel of Object.keys(this.battlesReels)) {
-                    for(let i = 0; i < 80; i++) { this.battlesReels[reel].push(items[Math.floor(Math.random() * items.length)]); }
+                for(let reel = 1; reel <= reelCount; reel++) {
+                    this.battlesReels[reel] = [];
+                    for(let i = 0; i < 80; i++) {
+                        this.battlesReels[reel].push(items.length > 0 ? items[Math.floor(Math.random() * items.length)] : null);
+                    }
                 }
             },
             battlesGetReelsPos() {
-                const offset = this.$refs['reel-1'][0].$el.getBoundingClientRect().top + (this.$refs['reel-1'][0].$el.getBoundingClientRect().height / 2) - (this.$refs['battles-spinner'].getBoundingClientRect().height / 2) - this.$refs['battles-spinner'].getBoundingClientRect().top;
-                const pos = Math.round(Math.abs(offset + 2416.5) / 125) + 20; 
+                const reelRef = this.$refs['reel-1'] && this.$refs['reel-1'][0];
+                if(!reelRef) { return; }
+
+                const offset = reelRef.$el.getBoundingClientRect().top + (reelRef.$el.getBoundingClientRect().height / 2) - (this.$refs['battles-spinner'].getBoundingClientRect().height / 2) - this.$refs['battles-spinner'].getBoundingClientRect().top;
+                const pos = Math.round(Math.abs(offset + 2416.5) / 125) + 20;
 
                 if(this.battlesReelsPos !== pos) {
                     this.battlesReelsPos = pos;
@@ -464,7 +469,11 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
                     if(this.battlesGameData.game.state === 'rolling' && Array.isArray(this.battlesGameData.game.bets)) {
                         this.battlesAddReels();
+                        this.battlesRunning = true;
                         this.battlesReelsPos = 60;
+
+                        const timeEnding = new Date(this.battlesGameData.game.updatedAt).getTime() + 5000;
+                        const spinDelay = Math.max(0, timeEnding - (Date.now() + this.generalTimeDiff)) + 100;
 
                         for(const [index, bet] of this.battlesGameData.game.bets.entries()) {
                             if(!bet || !bet.outcomes || !Array.isArray(bet.outcomes)) {
@@ -478,14 +487,12 @@ import BattlesReel from '@/components/battles/BattlesReel';
                             this.battlesReels[index + 1][60] = this.battlesGetOutcomeItem(bet.outcomes[outcomeIndex], outcomeItems);
 
                             setTimeout(() => {
-                                const timeEnding = new Date(this.battlesGameData.game.updatedAt).getTime() + 5000;
-                                let timeLeft = timeEnding - (new Date().getTime() + this.generalTimeDiff);
-                                timeLeft = timeLeft > 0 ? timeLeft : 0;
-
+                                const currentTime = Date.now() + this.generalTimeDiff;
+                                const durationSeconds = Math.max(0, timeEnding - currentTime) / 1000;
                                 const spinDistance = 7364 + (105 / 8) * Math.floor(Math.random() * 7 + 1);
                                 this.battlesReelStyle = {
                                     transform: 'translateX(0px) translateY(-' + spinDistance + 'px)',
-                                    transition: 'transform ' + (timeLeft / 1000) + 's cubic-bezier(0.25, 0.1, 0.25, 1)'
+                                    transition: 'transform ' + Math.max(durationSeconds, 0.2) + 's cubic-bezier(0.25, 0.1, 0.25, 1)'
                                 };
 
                                 setTimeout(() => {
@@ -497,7 +504,7 @@ import BattlesReel from '@/components/battles/BattlesReel';
                                         this.soundUnbox.play();
                                     }
                                 }, 250);
-                            }, timeLeft + 100);
+                            }, spinDelay);
                         }
                     } else if(this.battlesGameData.game.state === 'completed') {
                         if(this.soundBattles === 1) {
@@ -993,6 +1000,10 @@ import BattlesReel from '@/components/battles/BattlesReel';
 
     .battles-game.game-4 .battles-spinner .inner-element {
         width: 25%;
+    }
+
+    .battles-game.game-6 .battles-spinner .inner-element {
+        width: 16.66%;
     }
 
     .battles-game .element-waiting,

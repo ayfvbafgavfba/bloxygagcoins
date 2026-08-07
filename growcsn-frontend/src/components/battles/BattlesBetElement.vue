@@ -205,6 +205,14 @@
         width: calc(25% - 4.5px);
     }
 
+    .battles-game.game-6 .battles-bet-element {
+        width: calc(33.33% - 10px);
+    }
+
+    .battles-game.game-6 .battles-bet-element:nth-child(3n) {
+        margin-right: 0;
+    }
+
     .battles-bet-element .element-top {
         width: 100%;
         height: 65px;
